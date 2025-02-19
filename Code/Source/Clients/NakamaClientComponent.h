@@ -49,5 +49,11 @@ namespace NakamaClientGem
         // TickBus interface
         void OnTick(float deltaTime, AZ::ScriptTimePoint) override;
 
+        virtual void AuthenticateDevice(
+            const AZStd::string& id,
+            const AZStd::string& username,
+            bool create = false,
+            const AZStringMap& vars = {}
+        ) override;
     };
 }

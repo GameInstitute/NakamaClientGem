@@ -8,6 +8,8 @@
 #include <AzCore/RTTI/BehaviorContext.h>
 #include <AzCore/Math/Vector3.h>
 
+#include "NakamaClientDataTypes.h"
+
 namespace NakamaClientGem
 {
     class NakamaClientComponentRequests : public AZ::ComponentBus
@@ -15,6 +17,20 @@ namespace NakamaClientGem
     public:
         ~NakamaClientComponentRequests() override = default;
 
+        /**
+          * Authenticate a user with a device id.
+          *
+          * @param id A device identifier usually obtained from a platform API.
+          * @param username A username used to create the user. Defaults to empty string.
+          * @param create True if the user should be created when authenticated. Defaults to false.
+          * @param vars Extra information that will be bundled in the session token.
+          */
+        virtual void AuthenticateDevice(
+            const AZStd::string& id,
+            const AZStd::string& username,
+            bool create = false,
+            const AZStringMap& vars = {}
+        ) = 0;
     };
 
     using NakamaClientComponentRequestBus = AZ::EBus<NakamaClientComponentRequests>;

@@ -5,6 +5,7 @@
 #include <AzCore/Component/ComponentApplicationBus.h>
 #include <AzCore/Serialization/EditContext.h>
 
+
 namespace NakamaClientGem
 {
 	NakamaClientComponent::NakamaClientComponent()
@@ -66,22 +67,15 @@ namespace NakamaClientGem
 			}
 		}
 
-		/*
-		if (auto bc = azrtti_cast<AZ::BehaviorContext*>(rc))
-		{
-
-			bc->EBus<NakamaClientNotificationBus>("NakamaClientNotificationBus")
-				->Handler<NakamaClientNotificationHandler>();
-
-			bc->EBus<NakamaClientComponentRequestBus>("FirstPersonControllerComponentRequestBus")
-				->Attribute(AZ::Script::Attributes::Scope, AZ::Script::Attributes::ScopeFlags::Common)
-				->Attribute(AZ::Script::Attributes::Module, "controller")
-				->Attribute(AZ::Script::Attributes::Category, "First Person Controller")
-				->Event("Get Pointer To Active Camera Entity", &NakamaClientComponentRequests::GetActiveCameraEntityPtr)
-				->Event("Get Active Camera EntityId", &FirstPersonControllerComponentRequests::GetActiveCameraEntityId)
-				;
-				
-		}*/
+		if (auto bc = azrtti_cast<AZ::BehaviorContext*>(rc)) {
+			bc->Class<NakamaClientComponent>("NakamaClientComponent")
+				->Method("AuthenticateDevice", &NakamaClientComponent::AuthenticateDevice)
+				->Attribute(AZ::Script::Attributes::Category, "NakamaClient");
+			/*
+			bc->EBus <NakamaClientNotificationBus > ("NakamaClientComponentNotifications")
+				->Handler<NakamaClientComponentNotificationHandler>();
+				*/
+		}
 	}
 
 	void NakamaClientComponent::Init()
@@ -140,5 +134,32 @@ namespace NakamaClientGem
 	}
 	void NakamaClientComponent::OnTick(float, AZ::ScriptTimePoint)
 	{
+	}
+	void NakamaClientComponent::AuthenticateDevice(const AZStd::string& id, const AZStd::string& username, bool create, const AZStringMap& vars)
+	{
+		Nakama::NStringMap nVars;
+
+		if (vars.size() != 0)
+		{
+			for (auto kv : vars)
+			{
+				nVars.emplace(kv.first.c_str(), kv.second.c_str());
+			}
+		}
+
+		m_Client->authenticateDevice(
+			id.c_str(),
+			username.c_str(),
+			create,
+			nVars,
+			[this](Nakama::NSessionPtr nSession)
+			{
+				m_Session = nSession;
+			},
+			[](const Nakama::NError&)
+			{
+
+			}
+		);
 	}
 }
