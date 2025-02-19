@@ -101,7 +101,6 @@ namespace NakamaClientGem
 		AZ::TickBus::Handler::BusDisconnect();
 		NakamaClientComponentRequestBus::Handler::BusDisconnect();
 
-
 		if (m_RtClient)
 		{
 			m_RtClient->disconnect();
@@ -135,10 +134,10 @@ namespace NakamaClientGem
 	void NakamaClientComponent::OnTick(float, AZ::ScriptTimePoint)
 	{
 	}
-	void NakamaClientComponent::AuthenticateDevice(const AZStd::string& id, const AZStd::string& username, bool create, const AZStringMap& vars)
+	void NakamaClientComponent::AuthenticateDevice(const AZStd::string& id, const AZStd::string& username, bool create)
 	{
 		Nakama::NStringMap nVars;
-
+		/*
 		if (vars.size() != 0)
 		{
 			for (auto kv : vars)
@@ -146,6 +145,7 @@ namespace NakamaClientGem
 				nVars.emplace(kv.first.c_str(), kv.second.c_str());
 			}
 		}
+		*/
 
 		m_Client->authenticateDevice(
 			id.c_str(),
@@ -155,11 +155,51 @@ namespace NakamaClientGem
 			[this](Nakama::NSessionPtr nSession)
 			{
 				m_Session = nSession;
-			},
-			[](const Nakama::NError&)
-			{
 
+				m_Listener.setConnectCallback([]() {
+					NakamaClientNotificationBus::Broadcast(&NakamaClientNotificationBus::Events::OnConnect);
+					});
+				m_Listener.setDisconnectCallback([](const Nakama::NRtClientDisconnectInfo& nInfo) {
+					NakamaClientNotificationBus::Broadcast(&NakamaClientNotificationBus::Events::OnDisconnect, RtClientDisconnectInfo::FromNakama(nInfo));
+					});
+				m_Listener.setErrorCallback([](const Nakama::NRtError& nError) {
+					NakamaClientNotificationBus::Broadcast(&NakamaClientNotificationBus::Events::OnError, RtError::FromNakama(nError));
+					});
+				m_Listener.setChannelMessageCallback([](const Nakama::NChannelMessage&) {
+					// NakamaClientNotificationBus::Broadcast(&NakamaClientNotificationBus::Events::OnChannelMessage, ChannelMessage::FromNakama(nMessage));
+					});
+				m_Listener.setChannelPresenceCallback([](const Nakama::NChannelPresenceEvent&) {});
+				m_Listener.setMatchmakerMatchedCallback([](Nakama::NMatchmakerMatchedPtr) {});
+				m_Listener.setMatchDataCallback([](const Nakama::NMatchData&) {});
+				m_Listener.setMatchPresenceCallback([](const Nakama::NMatchPresenceEvent&) {});
+				m_Listener.setNotificationsCallback([](const Nakama::NNotificationList&) {});
+				m_Listener.setPartyCallback([](const Nakama::NParty&) {});
+				m_Listener.setPartyCloseCallback([](const Nakama::NPartyClose&) {});
+				m_Listener.setPartyDataCallback([](const Nakama::NPartyData&) {});
+				m_Listener.setPartyJoinRequestCallback([](const Nakama::NPartyJoinRequest&) {});
+				m_Listener.setPartyLeaderCallback([](const Nakama::NPartyLeader&) {});
+				m_Listener.setPartyMatchmakerTicketCallback([](const Nakama::NPartyMatchmakerTicket&) {});
+				m_Listener.setPartyPresenceCallback([](const Nakama::NPartyPresenceEvent&) {});
+				m_Listener.setStatusPresenceCallback([](const Nakama::NStatusPresenceEvent&) {});
+				m_Listener.setStreamPresenceCallback([](const Nakama::NStreamPresenceEvent&) {});
+				m_Listener.setStreamDataCallback([](const Nakama::NStreamData&) {});
+
+				m_RtClient->setListener(&m_Listener);
+				m_RtClient->connect(m_Session, true);
+				OnAuthenticateSuccessCallback();
+			},
+			[this](const Nakama::NError& nError)
+			{
+				OnAuthenticateFailedCallback(static_cast<AZ::s8>(nError.code), nError.message.c_str());
 			}
 		);
+	}
+	void NakamaClientComponent::OnAuthenticateSuccessCallback()
+	{
+		NakamaClientNotificationBus::Broadcast(&NakamaClientNotificationBus::Events::OnAuthenticateSuccess);
+	}
+	void NakamaClientComponent::OnAuthenticateFailedCallback(AZ::s8 code, const AZStd::string& message)
+	{
+		NakamaClientNotificationBus::Broadcast(&NakamaClientNotificationBus::Events::OnAuthenticateFailed, code, message);
 	}
 }

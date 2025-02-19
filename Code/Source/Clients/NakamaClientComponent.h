@@ -52,8 +52,12 @@ namespace NakamaClientGem
         virtual void AuthenticateDevice(
             const AZStd::string& id,
             const AZStd::string& username,
-            bool create = false,
-            const AZStringMap& vars = {}
+            bool create = false
         ) override;
+
+
+        // Callbacks
+        void OnAuthenticateSuccessCallback();
+        void OnAuthenticateFailedCallback(AZ::s8 code, const AZStd::string& message);
     };
 }
