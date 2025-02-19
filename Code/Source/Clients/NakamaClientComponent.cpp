@@ -9,10 +9,27 @@ namespace NakamaClientGem
 {
 	NakamaClientComponent::NakamaClientComponent()
 	{
+		m_Client = nullptr;
+		m_RtClient = nullptr;
+		m_Session = nullptr;
 	}
 
 	NakamaClientComponent::~NakamaClientComponent()
 	{
+		if (m_RtClient)
+		{
+			m_RtClient->disconnect();
+			m_RtClient = nullptr;
+		}
+		if (m_Session)
+		{
+			m_Session = nullptr;
+		}
+		if (m_Client)
+		{
+			m_Client->disconnect();
+			m_Client = nullptr;
+		}
 	}
 
 	void NakamaClientComponent::Reflect(AZ::ReflectContext* rc)
@@ -75,12 +92,37 @@ namespace NakamaClientGem
 	{
 		AZ::TickBus::Handler::BusConnect();
 		NakamaClientComponentRequestBus::Handler::BusConnect(GetEntityId());
+
+		Nakama::NClientParameters parameters;
+		parameters.serverKey = m_serverKey.c_str();
+		parameters.host = m_serverHost.c_str();
+		parameters.port = m_serverPort;
+
+		m_Client = Nakama::createDefaultClient(parameters);
+		m_RtClient = m_Client->createRtClient();
 	}
 
 	void NakamaClientComponent::Deactivate()
 	{
 		AZ::TickBus::Handler::BusDisconnect();
 		NakamaClientComponentRequestBus::Handler::BusDisconnect();
+
+
+		if (m_RtClient)
+		{
+			m_RtClient->disconnect();
+            m_RtClient = nullptr;
+		}
+		if (m_Session)
+		{
+            m_Session = nullptr;
+		}
+		if (m_Client)
+		{
+			m_Client->disconnect();
+            m_Client = nullptr;
+		}
+
 	}
 
 	void NakamaClientComponent::GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType&)

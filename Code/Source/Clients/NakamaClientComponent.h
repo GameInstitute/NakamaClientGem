@@ -8,6 +8,10 @@
 #include <AzCore/Math/Quaternion.h>
 #include <AzCore/std/containers/map.h>
 
+#include <nakama-cpp/Nakama.h>
+#include <nakama-cpp/realtime/NRtClientInterface.h>
+#include <nakama-cpp/realtime/NRtDefaultClientListener.h>
+
 namespace NakamaClientGem
 {
     class NakamaClientComponent
@@ -21,6 +25,12 @@ namespace NakamaClientGem
         AZ::u16 m_serverPort = 7350;
         AZStd::string m_serverHost = "127.0.0.1";
         AZStd::string m_serverKey = "defaultKey";
+
+        // Nakama Client Ptr
+        Nakama::NClientPtr m_Client;
+        Nakama::NRtClientPtr m_RtClient;
+        Nakama::NSessionPtr m_Session;
+        Nakama::NRtDefaultClientListener m_Listener;
 
         NakamaClientComponent();
         ~NakamaClientComponent();
