@@ -18,6 +18,10 @@ namespace NakamaClientGem
     public:
         AZ_COMPONENT(NakamaClientComponent, "{8AEB84E1-81C3-484B-8CED-DACFC6E86CE8}");
 
+        AZ::u16 m_serverPort = 7350;
+        AZStd::string m_serverHost = "127.0.0.1";
+        AZStd::string m_serverKey = "defaultKey";
+
         NakamaClientComponent();
         ~NakamaClientComponent();
 
