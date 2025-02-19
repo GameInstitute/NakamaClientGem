@@ -35,7 +35,6 @@ namespace NakamaClientGem
 
 	void NakamaClientComponent::Reflect(AZ::ReflectContext* rc)
 	{
-
 		if (auto sc = azrtti_cast<AZ::SerializeContext*>(rc))
 		{
 			sc->Class<NakamaClientComponent, AZ::Component>()
@@ -66,16 +65,14 @@ namespace NakamaClientGem
 					;
 			}
 		}
-
+		/*
 		if (auto bc = azrtti_cast<AZ::BehaviorContext*>(rc)) {
 			bc->Class<NakamaClientComponent>("NakamaClientComponent")
 				->Method("AuthenticateDevice", &NakamaClientComponent::AuthenticateDevice)
 				->Attribute(AZ::Script::Attributes::Category, "NakamaClient");
-			/*
-			bc->EBus <NakamaClientNotificationBus > ("NakamaClientComponentNotifications")
-				->Handler<NakamaClientComponentNotificationHandler>();
-				*/
+		
 		}
+		*/
 	}
 
 	void NakamaClientComponent::Init()
@@ -115,7 +112,6 @@ namespace NakamaClientGem
 			m_Client->disconnect();
             m_Client = nullptr;
 		}
-
 	}
 
 	void NakamaClientComponent::GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType&)
