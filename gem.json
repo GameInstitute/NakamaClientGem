@@ -1,0 +1,29 @@
+{
+    "gem_name": "NakamaClientGem",
+    "version": "1.0.0",
+    "display_name": "Nakama Client",
+    "license": "Apache-2.0",
+    "license_url": "",
+    "origin": "Eric Liu",
+    "origin_url": "",
+    "type": "Code",
+    "summary": "Nakama Client SDK for O3DE",
+    "canonical_tags": [
+        "Gem"
+    ],
+    "user_tags": [
+        "NakamaClientGem"
+    ],
+    "platforms": [
+        "Linux",
+        "Windows"
+    ],
+    "icon_path": "",
+    "requirements": "",
+    "documentation_url": "",
+    "dependencies": [],
+    "repo_uri": "",
+    "compatible_engines": [],
+    "engine_api_dependencies": [],
+    "restricted": "NakamaClientGem"
+}
