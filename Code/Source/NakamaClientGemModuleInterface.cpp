@@ -5,6 +5,7 @@
 #include <NakamaClientGem/NakamaClientGemTypeIds.h>
 
 #include <Clients/NakamaClientGemSystemComponent.h>
+#include <Clients/NakamaClientComponent.h>
 
 namespace NakamaClientGem
 {
@@ -21,6 +22,7 @@ namespace NakamaClientGem
         // This happens through the [MyComponent]::Reflect() function.
         m_descriptors.insert(m_descriptors.end(), {
             NakamaClientGemSystemComponent::CreateDescriptor(),
+            NakamaClientComponent::CreateDescriptor()
             });
     }
 

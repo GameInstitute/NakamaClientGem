@@ -33,18 +33,18 @@ namespace NakamaClientGem
 					"First person character controller")
 					->ClassElement(AZ::Edit::ClassElements::EditorData, "")
 					->Attribute(AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
-					->Attribute(Category, "Nakama Client")
-					->ClassElement(AZ::Edit::ClassElements::Group, "Multiplayer")
+					->Attribute(Category, "Multiplayer")
+					->ClassElement(AZ::Edit::ClassElements::Group, "Server")
 					->Attribute(AZ::Edit::Attributes::AutoExpand, false)
 					->DataElement(nullptr,
 						&NakamaClientComponent::m_serverHost,
-						"Server Host", "Nakama Server Host")
+						"Host", "Nakama Server Host")
 					->DataElement(nullptr,
 						&NakamaClientComponent::m_serverPort,
-						"Server Port", "Nakama Server Port")
+						"Port", "Nakama Server Port")
 					->DataElement(nullptr,
 						&NakamaClientComponent::m_serverKey,
-						"Server Key", "Nakama Server Key")
+						"Key", "Nakama Server Key")
 					;
 			}
 		}
