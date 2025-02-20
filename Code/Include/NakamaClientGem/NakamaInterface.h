@@ -42,8 +42,8 @@ namespace NakamaClientGem
 
         // Listener
         virtual void OnConnect() = 0;
-        /*
         virtual void OnDisconnect(const RtClientDisconnectInfo& info) = 0;
+        /*
         virtual void OnError(const RtError& error) = 0;
         virtual void OnChannelMessage(const ChannelMessage& message) = 0;
         virtual void OnChannelPresence(const ChannelPresenceEvent& presence) = 0;
@@ -76,7 +76,7 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaNotificationHandler,
             "{9B3ABC85-8E49-44C7-9BF1-D2CC119DB8BF}",
-            AZ::SystemAllocator, OnConnect,
+            AZ::SystemAllocator, OnConnect, OnDisconnect,
             OnAuthenticateSuccess, OnAuthenticateFailed
         );
 
@@ -84,6 +84,11 @@ namespace NakamaClientGem
         void OnConnect() override 
         {
             Call(FN_OnConnect);
+        }
+
+        void OnDisconnect(const RtClientDisconnectInfo& info) override 
+        {
+            Call(FN_OnDisconnect, info);
         }
 
         void OnAuthenticateSuccess(const AZStd::string& username, const AZStd::string& userId) override 

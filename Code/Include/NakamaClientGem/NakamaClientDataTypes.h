@@ -162,8 +162,16 @@ namespace NakamaClientGem
                         ->DataElement(AZ::Edit::UIHandlers::Default, &RtClientDisconnectInfo::remote, "Remote", "");
                 }
             }
-        }
 
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<RtClientDisconnectInfo>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("code", BehaviorValueProperty(&RtClientDisconnectInfo::code))
+                    ->Property("reason", BehaviorValueProperty(&RtClientDisconnectInfo::reason))
+                    ->Property("remote", BehaviorValueProperty(&RtClientDisconnectInfo::remote));
+            }
+        }
 
         static RtClientDisconnectInfo FromNakama(const Nakama::NRtClientDisconnectInfo& nInfo)
         {
@@ -198,6 +206,23 @@ namespace NakamaClientGem
                     ->Field("message", &RtError::message)
                     ->Field("context", &RtError::context)
                     ;
+
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<RtError>("RtError", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &RtError::code, "Code", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &RtError::message, "Message", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &RtError::context, "Context", "");
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<RtError>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("code", BehaviorValueProperty(&RtError::code))
+                    ->Property("message", BehaviorValueProperty(&RtError::message))
+                    ->Property("context", BehaviorValueProperty(&RtError::context));
             }
         }
 
@@ -255,6 +280,44 @@ namespace NakamaClientGem
                     ->Field("userIdOne", &ChannelMessage::userIdOne)
                     ->Field("userIdTwo", &ChannelMessage::userIdTwo)
                     ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<ChannelMessage>("ChannelMessage", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::channelId, "ChannelId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::messageId, "MessageId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::code, "Code", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::senderId, "SenderId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::username, "Username", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::content, "Content", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::createTime, "CreateTime", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::updateTime, "UpdateTime", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::persistent, "Persistent", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::roomName, "RoomName", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::groupId, "GroupId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::userIdOne, "UserIdOne", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelMessage::userIdTwo, "UserIdTwo", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<ChannelMessage>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("channelId", BehaviorValueProperty(&ChannelMessage::channelId))
+                    ->Property("messageId", BehaviorValueProperty(&ChannelMessage::messageId))
+                    ->Property("code", BehaviorValueProperty(&ChannelMessage::code))
+                    ->Property("senderId", BehaviorValueProperty(&ChannelMessage::senderId))
+                    ->Property("username", BehaviorValueProperty(&ChannelMessage::username))
+                    ->Property("content", BehaviorValueProperty(&ChannelMessage::content))
+                    ->Property("createTime", BehaviorValueProperty(&ChannelMessage::createTime))
+                    ->Property("updateTime", BehaviorValueProperty(&ChannelMessage::updateTime))
+                    ->Property("persistent", BehaviorValueProperty(&ChannelMessage::persistent))
+                    ->Property("roomName", BehaviorValueProperty(&ChannelMessage::roomName))
+                    ->Property("groupId", BehaviorValueProperty(&ChannelMessage::groupId))
+                    ->Property("userIdOne", BehaviorValueProperty(&ChannelMessage::userIdOne))
+                    ->Property("userIdTwo", BehaviorValueProperty(&ChannelMessage::userIdTwo))
+                    ;
             }
         }
 
@@ -306,6 +369,30 @@ namespace NakamaClientGem
                     ->Field("persistence", &UserPresence::persistence)
                     ->Field("status", &UserPresence::status)
                     ;
+
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<UserPresence>("UserPresence", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &UserPresence::userId, "UserId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &UserPresence::sessionId, "SessionId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &UserPresence::username, "Username", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &UserPresence::persistence, "Persistence", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &UserPresence::status, "Status", "")
+                        ;
+                }
+            }
+
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<UserPresence>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("userId", BehaviorValueProperty(&UserPresence::userId))
+                    ->Property("sessionId", BehaviorValueProperty(&UserPresence::sessionId))
+                    ->Property("username", BehaviorValueProperty(&UserPresence::username))
+                    ->Property("persistence", BehaviorValueProperty(&UserPresence::persistence))
+                    ->Property("status", BehaviorValueProperty(&UserPresence::status))
+                    ;
             }
         }
 
@@ -352,6 +439,33 @@ namespace NakamaClientGem
                     ->Field("userIdOne", &ChannelPresenceEvent::userIdOne)
                     ->Field("userIdTwo", &ChannelPresenceEvent::userIdTwo)
                     ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<ChannelPresenceEvent>("ChannelPresenceEvent", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelPresenceEvent::channelId, "ChannelId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelPresenceEvent::joins, "Joins", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelPresenceEvent::leaves, "Leaves", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelPresenceEvent::roomName,"RoomName", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelPresenceEvent::groupId, "GroupId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelPresenceEvent::userIdOne, "UserIdOne", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &ChannelPresenceEvent::userIdTwo, "UserIdTwo", "")
+                        ;
+                }
+
+                if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+                {
+                    behaviorContext->Class<ChannelPresenceEvent>()
+                        ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                        ->Property("channelId", BehaviorValueProperty(&ChannelPresenceEvent::channelId))
+                        ->Property("joins", BehaviorValueProperty(&ChannelPresenceEvent::joins))
+                        ->Property("leaves", BehaviorValueProperty(&ChannelPresenceEvent::leaves))
+                        ->Property("roomName", BehaviorValueProperty(&ChannelPresenceEvent::roomName))
+                        ->Property("groupId", BehaviorValueProperty(&ChannelPresenceEvent::groupId))
+                        ->Property("userIdOne", BehaviorValueProperty(&ChannelPresenceEvent::userIdOne))
+                        ->Property("userIdTwo", BehaviorValueProperty(&ChannelPresenceEvent::userIdTwo))
+                        ;
+                }
             }
         }
 
@@ -404,6 +518,26 @@ namespace NakamaClientGem
                     ->Field("stringProperties", &MatchmakerUser::stringProperties)
                     ->Field("numericProperties", &MatchmakerUser::numericProperties)
                     ;
+
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<MatchmakerUser>("MatchmakerUser", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchmakerUser::presence, "Presence", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchmakerUser::stringProperties, "StringProperties", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchmakerUser::numericProperties, "NumericProperties", "")
+                        ;
+                }
+            }
+
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<MatchmakerUser>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("presence", BehaviorValueProperty(&MatchmakerUser::presence))
+                    ->Property("stringProperties", BehaviorValueProperty(&MatchmakerUser::stringProperties))
+                    ->Property("numericProperties", BehaviorValueProperty(&MatchmakerUser::numericProperties))
+                    ;
             }
         }
 
@@ -444,6 +578,29 @@ namespace NakamaClientGem
                     ->Field("token", &MatchmakerMatched::token)
                     ->Field("users", &MatchmakerMatched::users)
                     ->Field("self", &MatchmakerMatched::self)
+                    ;
+
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<MatchmakerMatched>("MatchmakerMatched", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchmakerMatched::ticket, "Ticket", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchmakerMatched::matchId, "MatchId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchmakerMatched::token, "Token", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchmakerMatched::users, "Users", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchmakerMatched::self, "Self", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<MatchmakerMatched>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("ticket", BehaviorValueProperty(&MatchmakerMatched::ticket))
+                    ->Property("matchId", BehaviorValueProperty(&MatchmakerMatched::matchId))
+                    ->Property("token", BehaviorValueProperty(&MatchmakerMatched::token))
+                    ->Property("users", BehaviorValueProperty(&MatchmakerMatched::users))
+                    ->Property("self", BehaviorValueProperty(&MatchmakerMatched::self))
                     ;
             }
         }
@@ -492,6 +649,27 @@ namespace NakamaClientGem
                     ->Field("opCode", &MatchData::opCode)
                     ->Field("data", &MatchData::data)
                     ;
+
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<MatchData>("MatchData", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchData::matchId, "MatchId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchData::presence, "Presence", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchData::opCode, "OpCode", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchData::data, "Data", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<MatchData>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("matchId", BehaviorValueProperty(&MatchData::matchId))
+                    ->Property("presence", BehaviorValueProperty(&MatchData::presence))
+                    ->Property("opCode", BehaviorValueProperty(&MatchData::opCode))
+                    ->Property("data", BehaviorValueProperty(&MatchData::data))
+                    ;
             }
         }
 
@@ -529,6 +707,25 @@ namespace NakamaClientGem
                     ->Field("matchId", &MatchPresenceEvent::matchId)
                     ->Field("joins", &MatchPresenceEvent::joins)
                     ->Field("leaves", &MatchPresenceEvent::leaves)
+                    ;
+
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<MatchPresenceEvent>("MatchPresenceEvent", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchPresenceEvent::matchId, "MatchId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchPresenceEvent::joins, "Joins", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MatchPresenceEvent::leaves, "Leaves", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<MatchPresenceEvent>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("matchId", BehaviorValueProperty(&MatchPresenceEvent::matchId))
+                    ->Property("joins", BehaviorValueProperty(&MatchPresenceEvent::joins))
+                    ->Property("leaves", BehaviorValueProperty(&MatchPresenceEvent::leaves))
                     ;
             }
         }
@@ -587,6 +784,33 @@ namespace NakamaClientGem
                     ->Field("createTime", &Notification::createTime)
                     ->Field("persistent", &Notification::persistent)
                     ;
+
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<Notification>("Notification", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Notification::id, "Id", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Notification::subject, "Subject", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Notification::content, "Content", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Notification::code, "Code", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Notification::senderId, "SenderId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Notification::createTime, "CreateTime", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Notification::persistent, "Persistent", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<Notification>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("id", BehaviorValueProperty(&Notification::id))
+                    ->Property("subject", BehaviorValueProperty(&Notification::subject))
+                    ->Property("content", BehaviorValueProperty(&Notification::content))
+                    ->Property("code", BehaviorValueProperty(&Notification::code))
+                    ->Property("senderId", BehaviorValueProperty(&Notification::senderId))
+                    ->Property("createTime", BehaviorValueProperty(&Notification::createTime))
+                    ->Property("persistent", BehaviorValueProperty(&Notification::persistent))
+                    ;
             }
         }
 
@@ -625,6 +849,23 @@ namespace NakamaClientGem
                     ->Version(1)
                     ->Field("notifications", &NotificationList::notifications)
                     ->Field("cacheableCursor", &NotificationList::cacheableCursor)
+                    ;
+
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<NotificationList>("NotificationList", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &NotificationList::notifications, "Notifications", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &NotificationList::cacheableCursor, "CacheableCursor", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<NotificationList>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("notifications", BehaviorValueProperty(&NotificationList::notifications))
+                    ->Property("cacheableCursor", BehaviorValueProperty(&NotificationList::cacheableCursor))
                     ;
             }
         }
@@ -679,6 +920,31 @@ namespace NakamaClientGem
                     ->Field("leader", &Party::leader)
                     ->Field("presences", &Party::presences)
                     ;
+
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<Party>("Party", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Party::id, "Id", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Party::open, "Open", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Party::maxSize, "MaxSize", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Party::self, "Self", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Party::leader, "Leader", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Party::presences, "Presences", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<Party>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("id", BehaviorValueProperty(&Party::id))
+                    ->Property("open", BehaviorValueProperty(&Party::open))
+                    ->Property("maxSize", BehaviorValueProperty(&Party::maxSize))
+                    ->Property("self", BehaviorValueProperty(&Party::self))
+                    ->Property("leader", BehaviorValueProperty(&Party::leader))
+                    ->Property("presences", BehaviorValueProperty(&Party::presences))
+                    ;
             }
         }
 
@@ -719,6 +985,20 @@ namespace NakamaClientGem
                 serializeContext->Class<PartyClose>()
                     ->Version(1)
                     ->Field("id", &PartyClose::id)
+                    ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<PartyClose>("PartyClose", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyClose::id, "Id", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<PartyClose>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("id", BehaviorValueProperty(&PartyClose::id))
                     ;
             }
         }
@@ -763,6 +1043,27 @@ namespace NakamaClientGem
                     ->Field("opCode", &PartyData::opCode)
                     ->Field("data", &PartyData::data)
                     ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<PartyData>("PartyData", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyData::partyId, "PartyId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyData::presence, "Presence", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyData::opCode, "OpCode", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyData::data, "Data", "")
+                       ;
+                }
+            }
+
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<PartyData>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("partyId", BehaviorValueProperty(&PartyData::partyId))
+                    ->Property("presence", BehaviorValueProperty(&PartyData::presence))
+                    ->Property("opCode", BehaviorValueProperty(&PartyData::opCode))
+                    ->Property("data", BehaviorValueProperty(&PartyData::data))
+                    ;
             }
         }
 
@@ -800,6 +1101,22 @@ namespace NakamaClientGem
                     ->Version(1)
                     ->Field("partyId", &PartyJoinRequest::partyId)
                     ->Field("presences", &PartyJoinRequest::presences)
+                    ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<PartyJoinRequest>("PartyJoinRequest", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyJoinRequest::partyId, "PartyId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyJoinRequest::presences, "Presences", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<PartyJoinRequest>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("partyId", BehaviorValueProperty(&PartyJoinRequest::partyId))
+                    ->Property("presences", BehaviorValueProperty(&PartyJoinRequest::presences))
                     ;
             }
         }
@@ -843,6 +1160,22 @@ namespace NakamaClientGem
                     ->Field("partyId", &PartyLeader::partyId)
                     ->Field("presence", &PartyLeader::presence)
                     ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<PartyLeader>("PartyLeader", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyLeader::partyId, "PartyId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyLeader::presence, "Presence", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<PartyLeader>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("partyId", BehaviorValueProperty(&PartyLeader::partyId))
+                    ->Property("presence", BehaviorValueProperty(&PartyLeader::presence))
+                    ;
             }
         }
 
@@ -878,6 +1211,22 @@ namespace NakamaClientGem
                     ->Version(1)
                     ->Field("partyId", &PartyMatchmakerTicket::partyId)
                     ->Field("ticket", &PartyMatchmakerTicket::ticket)
+                    ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<PartyMatchmakerTicket>("PartyMatchmakerTicket", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyMatchmakerTicket::partyId, "PartyId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyMatchmakerTicket::ticket, "Ticket", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<PartyMatchmakerTicket>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("partyId", BehaviorValueProperty(&PartyMatchmakerTicket::partyId))
+                    ->Property("ticket", BehaviorValueProperty(&PartyMatchmakerTicket::ticket))
                     ;
             }
         }
@@ -918,6 +1267,24 @@ namespace NakamaClientGem
                     ->Field("partyId", &PartyPresenceEvent::partyId)
                     ->Field("joins", &PartyPresenceEvent::joins)
                     ->Field("leaves", &PartyPresenceEvent::leaves)
+                    ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<PartyPresenceEvent>("PartyPresenceEvent", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyPresenceEvent::partyId, "PartyId", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyPresenceEvent::joins, "Joins", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &PartyPresenceEvent::leaves, "Leaves", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<PartyPresenceEvent>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("partyId", BehaviorValueProperty(&PartyPresenceEvent::partyId))
+                    ->Property("joins", BehaviorValueProperty(&PartyPresenceEvent::joins))
+                    ->Property("leaves", BehaviorValueProperty(&PartyPresenceEvent::leaves))
                     ;
             }
         }
@@ -963,6 +1330,22 @@ namespace NakamaClientGem
                     ->Version(1)
                     ->Field("joins", &StatusPresenceEvent::joins)
                     ->Field("leaves", &StatusPresenceEvent::leaves)
+                    ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<StatusPresenceEvent>("StatusPresenceEvent", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &StatusPresenceEvent::joins, "Joins", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &StatusPresenceEvent::leaves, "Leaves", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<StatusPresenceEvent>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("joins", BehaviorValueProperty(&StatusPresenceEvent::joins))
+                    ->Property("leaves", BehaviorValueProperty(&StatusPresenceEvent::leaves))
                     ;
             }
         }
@@ -1013,6 +1396,26 @@ namespace NakamaClientGem
                     ->Field("subcontext", &Stream::subcontext)
                     ->Field("label", &Stream::label)
                     ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<Stream>("Stream", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Stream::mode, "Mode", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Stream::subject, "Subject", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Stream::subcontext, "Subcontext", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Stream::label, "Label", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<Stream>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("mode", BehaviorValueProperty(&Stream::mode))
+                    ->Property("subject", BehaviorValueProperty(&Stream::subject))
+                    ->Property("subcontext", BehaviorValueProperty(&Stream::subcontext))
+                    ->Property("label", BehaviorValueProperty(&Stream::label))
+                    ;
             }
         }
 
@@ -1050,6 +1453,25 @@ namespace NakamaClientGem
                     ->Field("joins", &StreamPresenceEvent::joins)
                     ->Field("leaves", &StreamPresenceEvent::leaves)
                     ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<StreamPresenceEvent>("StreamPresenceEvent", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &StreamPresenceEvent::stream, "Stream", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &StreamPresenceEvent::joins, "Joins", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &StreamPresenceEvent::leaves, "Leaves", "")
+                        ;
+                }
+            }
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<StreamPresenceEvent>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("stream", BehaviorValueProperty(&StreamPresenceEvent::stream))
+                    ->Property("joins", BehaviorValueProperty(&StreamPresenceEvent::joins))
+                    ->Property("leaves", BehaviorValueProperty(&StreamPresenceEvent::leaves))
+                    ;
+
             }
         }
 
@@ -1097,6 +1519,25 @@ namespace NakamaClientGem
                     ->Field("stream", &StreamData::stream)
                     ->Field("sender", &StreamData::sender)
                     ->Field("data", &StreamData::data)
+                    ;
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<StreamData>("StreamData", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &StreamData::stream, "Stream", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &StreamData::sender, "Sender", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &StreamData::data, "Data", "")
+                        ;
+                }
+            }
+
+            if (auto behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+            {
+                behaviorContext->Class<StreamData>()
+                    ->Attribute(AZ::Script::Attributes::Category, "Nakama")
+                    ->Property("stream", BehaviorValueProperty(&StreamData::stream))
+                    ->Property("sender", BehaviorValueProperty(&StreamData::sender))
+                    ->Property("data", BehaviorValueProperty(&StreamData::data))
                     ;
             }
         }

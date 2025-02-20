@@ -31,6 +31,8 @@ namespace NakamaClientGem
         Nakama::NSessionPtr m_Session;
         Nakama::NRtDefaultClientListener m_Listener;
 
+        static void ReflectDataTypes(AZ::ReflectContext* context);
+
         /*
         * Reflects component data into the reflection contexts, including the serialization, edit, and behavior contexts.
         */

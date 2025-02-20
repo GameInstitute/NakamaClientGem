@@ -19,8 +19,37 @@ namespace NakamaClientGem
         NakamaRequestBus::Handler::BusDisconnect(GetEntityId());
     }
 
+    void NakamaComponent::ReflectDataTypes(AZ::ReflectContext* context)
+    {
+        RtClientDisconnectInfo::Reflect(context);
+        RtError::Reflect(context);
+        ChannelMessage::Reflect(context);
+        UserPresence::Reflect(context);
+        ChannelPresenceEvent::Reflect(context);
+        MatchmakerUser::Reflect(context);
+        MatchmakerMatched::Reflect(context);
+        MatchData::Reflect(context);
+        MatchPresenceEvent::Reflect(context);
+        Notification::Reflect(context);
+        NotificationList::Reflect(context);
+        Party::Reflect(context);
+        PartyClose::Reflect(context);
+        PartyData::Reflect(context);
+        PartyJoinRequest::Reflect(context);
+        PartyLeader::Reflect(context);
+        PartyMatchmakerTicket::Reflect(context);
+        PartyPresenceEvent::Reflect(context);
+        StatusPresenceEvent::Reflect(context);
+        Stream::Reflect(context);
+        StreamPresenceEvent::Reflect(context);
+        StreamData::Reflect(context);
+    }
+
     void NakamaComponent::Reflect(AZ::ReflectContext* context)
     {
+        // Reflect datatypes before bus
+        ReflectDataTypes(context);
+
         if (auto serializeContext = azrtti_cast<AZ::SerializeContext*>(context))
         {
             serializeContext->Class<NakamaComponent, AZ::Component>()
@@ -55,7 +84,7 @@ namespace NakamaClientGem
         if (AZ::BehaviorContext* behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
         {
             behaviorContext->EBus<NakamaNotificationBus>("NakamaNotification")
-                ->Attribute(AZ::Script::Attributes::Category, "Multiplayer") 
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaNotification") 
                 ->Handler<NakamaNotificationHandler>();
 
             behaviorContext->Class<NakamaComponent>("Nakama Component")
@@ -107,8 +136,12 @@ namespace NakamaClientGem
             &NakamaNotificationBus::Events::OnConnect
         );
     }
-    void NakamaComponent::OnDisconnect(const RtClientDisconnectInfo&)
+    void NakamaComponent::OnDisconnect(const RtClientDisconnectInfo& info)
     {
+        NakamaNotificationBus::Broadcast(
+            &NakamaNotificationBus::Events::OnDisconnect,
+            info
+        );
     }
     void NakamaComponent::OnAuthenticateSuccess(const Nakama::NSessionPtr& session)
     {
