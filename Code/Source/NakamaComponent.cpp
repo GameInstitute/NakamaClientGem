@@ -120,7 +120,98 @@ namespace NakamaClientGem
 
             behaviorContext->Class<NakamaComponent>("Nakama")
                 ->Attribute(AZ::Script::Attributes::Category, "NakamaClient")
-                ->Method("AuthenticateDevice",&NakamaComponent::AuthenticateDevice);
+                ->Method("AuthenticateDevice",&NakamaComponent::AuthenticateDevice)
+                ->Method("AuthenticateEmail",&NakamaComponent::AuthenticateEmail)
+                ->Method("AuthenticateFacebook", &NakamaComponent::AuthenticateFacebook)
+                ->Method("AuthenticateGoogle", &NakamaComponent::AuthenticateGoogle)
+                ->Method("AuthenticateGameCenter", &NakamaComponent::AuthenticateGameCenter)
+                ->Method("AuthenticateApple", &NakamaComponent::AuthenticateApple)
+                ->Method("AuthenticateCustom", &NakamaComponent::AuthenticateCustom)
+                ->Method("AuthenticateSteam", &NakamaComponent::AuthenticateSteam)
+                ->Method("linkFacebook", &NakamaComponent::linkFacebook)
+                ->Method("linkEmail", &NakamaComponent::linkEmail)
+                ->Method("linkDevice", &NakamaComponent::linkDevice)
+                ->Method("linkGoogle", &NakamaComponent::linkGoogle)
+                ->Method("linkGameCenter", &NakamaComponent::linkGameCenter)
+                ->Method("linkApple", &NakamaComponent::linkApple)
+                ->Method("linkSteam", &NakamaComponent::linkSteam)
+                ->Method("linkCustom", &NakamaComponent::linkCustom)
+                ->Method("unlinkFacebook", &NakamaComponent::unlinkFacebook)
+                ->Method("unlinkEmail", &NakamaComponent::unlinkEmail)
+                ->Method("unlinkGoogle", &NakamaComponent::unlinkGoogle)
+                ->Method("unlinkGameCenter", &NakamaComponent::unlinkGameCenter)
+                ->Method("unlinkApple", &NakamaComponent::unlinkApple)
+                ->Method("unlinkSteam", &NakamaComponent::unlinkSteam)
+                ->Method("unlinkDevice", &NakamaComponent::unlinkDevice)
+                ->Method("unlinkCustom", &NakamaComponent::unlinkCustom)
+                ->Method("importFacebookFriends", &NakamaComponent::importFacebookFriends)
+                ->Method("getAccount", &NakamaComponent::getAccount)
+                ->Method("updateAccount", &NakamaComponent::updateAccount)
+                ->Method("getUsers", &NakamaComponent::getUsers)
+                ->Method("addFriends", &NakamaComponent::addFriends)
+                ->Method("deleteFriends", &NakamaComponent::deleteFriends)
+                ->Method("blockFriends", &NakamaComponent::blockFriends)
+                ->Method("listFriends", &NakamaComponent::listFriends)
+                ->Method("createGroup", &NakamaComponent::createGroup)
+                ->Method("deleteGroup", &NakamaComponent::deleteGroup)
+                ->Method("addGroupUsers", &NakamaComponent::addGroupUsers)
+                ->Method("listGroupUsers", &NakamaComponent::listGroupUsers)
+                ->Method("kickGroupUsers", &NakamaComponent::kickGroupUsers)
+                ->Method("joinGroup", &NakamaComponent::joinGroup)
+                ->Method("leaveGroup", &NakamaComponent::leaveGroup)
+                ->Method("listGroups", &NakamaComponent::listGroups)
+                ->Method("listUserGroups", &NakamaComponent::listUserGroups)
+                ->Method("listUserGroupsWithId", &NakamaComponent::listUserGroupsWithId)
+                ->Method("promoteGroupUsers", &NakamaComponent::promoteGroupUsers)
+                ->Method("demoteGroupUsers", &NakamaComponent::demoteGroupUsers)
+                ->Method("updateGroup", &NakamaComponent::updateGroup)
+                ->Method("listLeaderboardRecords", &NakamaComponent::listLeaderboardRecords)
+                ->Method("listLeaderboardRecordsAroundOwner", &NakamaComponent::listLeaderboardRecordsAroundOwner)
+                ->Method("writeLeaderboardRecord", &NakamaComponent::writeLeaderboardRecord)
+                ->Method("deleteLeaderboardRecord", &NakamaComponent::deleteLeaderboardRecord)
+                ->Method("writeTournamentRecord", &NakamaComponent::writeTournamentRecord)
+                ->Method("listTournaments", &NakamaComponent::listTournaments)
+                ->Method("listTournamentRecords", &NakamaComponent::listTournamentRecords)
+                ->Method("listTournamentRecordsAroundOwner", &NakamaComponent::listTournamentRecordsAroundOwner)
+                ->Method("joinTournament", &NakamaComponent::joinTournament)
+                ->Method("listMatches", &NakamaComponent::listMatches)
+                ->Method("listNotifications", &NakamaComponent::listNotifications)
+                ->Method("deleteNotifications", &NakamaComponent::deleteNotifications)
+                ->Method("listChannelMessages", &NakamaComponent::listChannelMessages)
+                ->Method("listStorageObjects", &NakamaComponent::listStorageObjects)
+                ->Method("listUsersStorageObjects", &NakamaComponent::listUsersStorageObjects)
+                ->Method("writeStorageObjects", &NakamaComponent::writeStorageObjects)
+                ->Method("readStorageObjects", &NakamaComponent::readStorageObjects)
+                ->Method("deleteStorageObjects", &NakamaComponent::deleteStorageObjects)
+                ->Method("rpc", &NakamaComponent::rpc)
+                ->Method("rpcWithId", &NakamaComponent::rpcWithId)
+                ->Method("joinChat", &NakamaComponent::joinChat)
+                ->Method("leaveChat", &NakamaComponent::leaveChat)
+                ->Method("writeChatMessage", &NakamaComponent::writeChatMessage)
+                ->Method("updateChatMessage", &NakamaComponent::updateChatMessage)
+                ->Method("removeChatMessage", &NakamaComponent::removeChatMessage)
+                ->Method("createMatch", &NakamaComponent::createMatch)
+                ->Method("joinMatch", &NakamaComponent::joinMatch)
+                ->Method("joinMatchByToken", &NakamaComponent::joinMatchByToken)
+                ->Method("leaveMatch", &NakamaComponent::leaveMatch)
+                ->Method("addMatchmaker", &NakamaComponent::addMatchmaker)
+                ->Method("removeMatchmaker", &NakamaComponent::removeMatchmaker)
+                ->Method("sendMatchData", &NakamaComponent::sendMatchData)
+                ->Method("followUsers", &NakamaComponent::followUsers)
+                ->Method("unfollowUsers", &NakamaComponent::unfollowUsers)
+                ->Method("updateStatus", &NakamaComponent::updateStatus)
+                ->Method("rtRpc", &NakamaComponent::rtRpc)
+                ->Method("acceptPartyMember", &NakamaComponent::acceptPartyMember)
+                ->Method("addMatchmakerParty", &NakamaComponent::addMatchmakerParty)
+                ->Method("closeParty", &NakamaComponent::closeParty)
+                ->Method("createParty", &NakamaComponent::createParty)
+                ->Method("joinParty", &NakamaComponent::joinParty)
+                ->Method("leaveParty", &NakamaComponent::leaveParty)
+                ->Method("listPartyJoinRequests", &NakamaComponent::listPartyJoinRequests)
+                ->Method("promotePartyMember", &NakamaComponent::promotePartyMember)
+                ->Method("removeMatchmakerParty", &NakamaComponent::removeMatchmakerParty)
+                ->Method("removePartyMember", &NakamaComponent::removePartyMember)
+                ->Method("sendPartyData", &NakamaComponent::sendPartyData)
                 ;
 
         }
@@ -144,8 +235,6 @@ namespace NakamaClientGem
     }
     void NakamaComponent::AuthenticateDevice(const AZStd::string& id, const AZStd::string& username, bool create, const AZStringMap& vars)
     {
-        AZ_Warning("AuthenticateDevice", true, R"(%s %s %d %d)", id.c_str(), username.c_str(), create, vars.size());
-
         m_Client->authenticateDevice(
             id.c_str(),
             username.c_str(),
@@ -163,6 +252,21 @@ namespace NakamaClientGem
     }
     void NakamaComponent::AuthenticateEmail(const AZStd::string& email, const AZStd::string& password, const AZStd::string& username, bool create, const AZStringMap& vars)
     {
+        m_Client->authenticateEmail(
+            email.c_str(),
+            password.c_str(),
+            username.c_str(),
+            create,
+            {},
+            [this](Nakama::NSessionPtr nSession)
+            {
+                OnAuthenticateSuccess(nSession);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnAuthenticateFailed(nError);
+            }
+        );
     }
     void NakamaComponent::AuthenticateFacebook(const AZStd::string& accessToken, const AZStd::string& username, bool create, bool importFriends, const AZStringMap& vars)
     {
@@ -284,7 +388,7 @@ namespace NakamaClientGem
     void NakamaComponent::listUserGroups(AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor)
     {
     }
-    void NakamaComponent::listUserGroups(const AZStd::string& userId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor)
+    void NakamaComponent::listUserGroupsWithId(const AZStd::string& userId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor)
     {
     }
     void NakamaComponent::promoteGroupUsers(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids)

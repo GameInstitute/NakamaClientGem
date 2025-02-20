@@ -639,7 +639,7 @@ namespace NakamaClientGem
          * @param state The group membership state to list.
          * @param cursor An optional next page cursor.
          */
-        virtual void listUserGroups(
+        virtual void listUserGroupsWithId(
             const AZStd::string& userId,
             AZ::s32 limit,
             AZ::u8 state,
