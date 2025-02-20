@@ -54,8 +54,10 @@ namespace NakamaClientGem
 
         if (AZ::BehaviorContext* behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
         {
+
             behaviorContext->Class<NakamaComponent>("Nakama Component")
                 ->Attribute(AZ::Script::Attributes::Category, "NakamaClient")
+                ->Method("AuthenticateDevice",&NakamaComponent::AuthenticateDevice);
                 ;
         }
     }
@@ -75,5 +77,11 @@ namespace NakamaClientGem
 
     void NakamaComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
     {
+    }
+    void NakamaComponent::AuthenticateDevice(const AZStd::string& id, const AZStd::string& username, bool create, const AZStringMap& vars)
+    {
+        AZ_Warning("AuthenticateDevice", true, R"(%s %s %d %d)", id.c_str(), username.c_str(), create, vars.size());
+
+
     }
 } // namespace NakamaClientGem

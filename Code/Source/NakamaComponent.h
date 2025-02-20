@@ -71,6 +71,9 @@ namespace NakamaClientGem
         */
         static void GetDependentServices(AZ::ComponentDescriptor::DependencyArrayType& dependent);
 
+        virtual void AuthenticateDevice(const AZStd::string& id, const AZStd::string& username, bool create = false, const AZStringMap& vars = {}) override;
+
+
     protected:
         /*
         * Puts this component into an active state.
