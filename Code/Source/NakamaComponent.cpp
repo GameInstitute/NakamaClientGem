@@ -24,6 +24,9 @@ namespace NakamaClientGem
         if (auto serializeContext = azrtti_cast<AZ::SerializeContext*>(context))
         {
             serializeContext->Class<NakamaComponent, AZ::Component>()
+                ->Field("Server Host", &NakamaComponent::m_serverHost)
+                ->Field("Server Port", &NakamaComponent::m_serverPort)
+                ->Field("Server Key", &NakamaComponent::m_serverKey)
                 ->Version(1)
                 ;
 
@@ -34,6 +37,17 @@ namespace NakamaClientGem
                     ->Attribute(AZ::Edit::Attributes::Category, "Multiplayer")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
+                    ->ClassElement(AZ::Edit::ClassElements::Group, "Server")
+                    ->Attribute(AZ::Edit::Attributes::AutoExpand, false)
+                    ->DataElement(nullptr,
+                        &NakamaComponent::m_serverHost,
+                        "Host", "Nakama Server Host")
+                    ->DataElement(nullptr,
+                        &NakamaComponent::m_serverPort,
+                        "Port", "Nakama Server Port")
+                    ->DataElement(nullptr,
+                        &NakamaComponent::m_serverKey,
+                        "Key", "Nakama Server Key")
                     ;
             }
         }

@@ -4,6 +4,9 @@
 #include <AzCore/Component/Component.h>
 #include <NakamaClientGem/NakamaInterface.h>
 
+#include <nakama-cpp/Nakama.h>
+#include <nakama-cpp/realtime/NRtClientInterface.h>
+#include <nakama-cpp/realtime/NRtDefaultClientListener.h>
 namespace NakamaClientGem
 {
     /*
@@ -17,6 +20,16 @@ namespace NakamaClientGem
     {
     public:
         AZ_COMPONENT_DECL(NakamaComponent);
+
+        AZ::u16 m_serverPort = 7350;
+        AZStd::string m_serverHost = "127.0.0.1";
+        AZStd::string m_serverKey = "defaultKey";
+
+        // Nakama Client Ptr
+        Nakama::NClientPtr m_Client;
+        Nakama::NRtClientPtr m_RtClient;
+        Nakama::NSessionPtr m_Session;
+        Nakama::NRtDefaultClientListener m_Listener;
 
         /*
         * Reflects component data into the reflection contexts, including the serialization, edit, and behavior contexts.
