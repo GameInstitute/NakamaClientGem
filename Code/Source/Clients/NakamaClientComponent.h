@@ -37,6 +37,9 @@ namespace NakamaClientGem
 
         static void Reflect(AZ::ReflectContext* rc);
 
+
+        static void ReflectStructs(AZ::ReflectContext* rc);
+
         // AZ::Component interface implementation
         void Init() override;
         void Activate() override;

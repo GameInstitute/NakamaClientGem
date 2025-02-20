@@ -35,6 +35,8 @@ namespace NakamaClientGem
 
 	void NakamaClientComponent::Reflect(AZ::ReflectContext* rc)
 	{
+		ReflectStructs(rc);
+
 		if (auto sc = azrtti_cast<AZ::SerializeContext*>(rc))
 		{
 			sc->Class<NakamaClientComponent, AZ::Component>()
@@ -73,6 +75,32 @@ namespace NakamaClientGem
 		
 		}
 		*/
+	}
+
+	void NakamaClientComponent::ReflectStructs(AZ::ReflectContext* rc)
+	{
+		RtClientDisconnectInfo::Reflect(rc);
+        RtError::Reflect(rc);
+		ChannelMessage::Reflect(rc);
+		UserPresence::Reflect(rc);
+		ChannelPresenceEvent::Reflect(rc);
+		MatchmakerUser::Reflect(rc);
+		MatchmakerMatched::Reflect(rc);
+		MatchData::Reflect(rc);
+		MatchPresenceEvent::Reflect(rc);
+		Notification::Reflect(rc);
+		NotificationList::Reflect(rc);
+		Party::Reflect(rc);
+		PartyClose::Reflect(rc);
+		PartyData::Reflect(rc);
+		PartyJoinRequest::Reflect(rc);
+		PartyLeader::Reflect(rc);
+		PartyMatchmakerTicket::Reflect(rc);
+		PartyPresenceEvent::Reflect(rc);
+		StatusPresenceEvent::Reflect(rc);
+		Stream::Reflect(rc);
+		StreamPresenceEvent::Reflect(rc);
+		StreamData::Reflect(rc);
 	}
 
 	void NakamaClientComponent::Init()
