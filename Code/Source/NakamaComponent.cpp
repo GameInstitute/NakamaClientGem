@@ -14,10 +14,12 @@ namespace NakamaClientGem
     void NakamaComponent::Activate()
     {
         NakamaRequestBus::Handler::BusConnect(GetEntityId());
+        AZ::TickBus::Handler::BusConnect();
     }
 
     void NakamaComponent::Deactivate()
     {
+        AZ::TickBus::Handler::BusConnect();
         NakamaRequestBus::Handler::BusDisconnect(GetEntityId());
     }
 
@@ -233,6 +235,21 @@ namespace NakamaClientGem
     void NakamaComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
     {
     }
+    void NakamaComponent::OnTick([[maybe_unused]] float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time)
+    {
+        if (m_Client)
+            m_Client->tick();
+        if (m_RtClient)
+            m_RtClient->tick();
+
+        if (!m_Session)
+            return;
+
+        if (m_Session->getExpireTime() > getUnixTimestampMs() + 5000)
+        {
+            authenticateRefresh();
+        }
+    }
     void NakamaComponent::AuthenticateDevice(const AZStd::string& id, const AZStd::string& username, bool create, const AZStringMap& vars)
     {
         m_Client->authenticateDevice(
@@ -288,6 +305,16 @@ namespace NakamaClientGem
     }
     void NakamaComponent::authenticateRefresh()
     {
+        if (m_RtClient->isConnected())
+        {
+            m_Client->authenticateRefresh(m_Session,
+                [this](Nakama::NSessionPtr nSession) {
+                    m_Session = nSession;
+                },
+                [](const Nakama::NError&) {
+                    // Todo
+                });
+        }
     }
     void NakamaComponent::linkFacebook(const AZStd::string& accessToken, bool importFriends)
     {

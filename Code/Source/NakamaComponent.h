@@ -2,6 +2,8 @@
 #pragma once
 
 #include <AzCore/Component/Component.h>
+#include <AzCore/Component/TickBus.h>
+
 #include <NakamaClientGem/NakamaInterface.h>
 
 #include <nakama-cpp/Nakama.h>
@@ -17,6 +19,7 @@ namespace NakamaClientGem
     class NakamaComponent
         : public AZ::Component
         , public NakamaRequestBus::Handler
+        , public AZ::TickBus::Handler
     {
     public:
         AZ_COMPONENT_DECL(NakamaComponent);
@@ -73,6 +76,8 @@ namespace NakamaClientGem
         */
         static void GetDependentServices(AZ::ComponentDescriptor::DependencyArrayType& dependent);
 
+        // AZTickBus interface implementation
+        void OnTick(float deltaTime, AZ::ScriptTimePoint time) override;
 
 #pragma region Authentication
         /**

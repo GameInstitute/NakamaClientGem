@@ -4013,4 +4013,11 @@ namespace NakamaClientGem
             };
         }
     };
+
+    uint64_t getUnixTimestampMs()
+    {
+        return AZStd::chrono::duration_cast<AZStd::chrono::milliseconds>(
+            AZStd::chrono::system_clock::now().time_since_epoch()
+        ).count();
+    }
 } // namespace NakamaClientGem
