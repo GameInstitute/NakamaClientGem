@@ -154,6 +154,94 @@ namespace NakamaClientGem
             OnDisconnect(RtClientDisconnectInfo::FromNakama(nInfo));
             });
 
+        m_Listener.setErrorCallback([](const Nakama::NRtError& nError) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnError,
+                RtError::FromNakama(nError)
+            );
+            });
+        m_Listener.setChannelMessageCallback([](const Nakama::NChannelMessage& nMessage) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnChannelMessage, 
+                ChannelMessage::FromNakama(nMessage)
+            );
+            });
+        m_Listener.setChannelPresenceCallback([](const Nakama::NChannelPresenceEvent& nEvent) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnChannelPresence,
+                ChannelPresenceEvent::FromNakama(nEvent));
+            });
+        m_Listener.setMatchmakerMatchedCallback([](Nakama::NMatchmakerMatchedPtr matchedPtr) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnMatchmakerMatched, 
+                MatchmakerMatched::FromNakama(*matchedPtr));
+            });
+        m_Listener.setMatchDataCallback([](const Nakama::NMatchData& nData) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnMatchData, 
+                MatchData::FromNakama(nData));
+            });
+        m_Listener.setMatchPresenceCallback([](const Nakama::NMatchPresenceEvent& nEvent) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnMatchPresence,
+                MatchPresenceEvent::FromNakama(nEvent));
+            });
+        m_Listener.setNotificationsCallback([](const Nakama::NNotificationList& nList) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnNotifications, 
+                NotificationList::FromNakama(nList));
+            });
+        m_Listener.setPartyCallback([](const Nakama::NParty& nParty) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnParty, 
+                Party::FromNakama(nParty));
+            });
+        m_Listener.setPartyCloseCallback([](const Nakama::NPartyClose& nPartyClose) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnPartyClosed, 
+                PartyClose::FromNakama(nPartyClose));
+            });
+        m_Listener.setPartyDataCallback([](const Nakama::NPartyData& nData) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnPartyData, 
+                PartyData::FromNakama(nData));
+            });
+        m_Listener.setPartyJoinRequestCallback([](const Nakama::NPartyJoinRequest& nRequest) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnPartyJoinRequest, 
+                PartyJoinRequest::FromNakama(nRequest));
+            });
+        m_Listener.setPartyLeaderCallback([](const Nakama::NPartyLeader& nLeader) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnPartyLeader, 
+                PartyLeader::FromNakama(nLeader));
+            });
+        m_Listener.setPartyMatchmakerTicketCallback([](const Nakama::NPartyMatchmakerTicket& nTicket) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnPartyMatchmakerTicket, 
+                PartyMatchmakerTicket::FromNakama(nTicket));
+            });
+        m_Listener.setPartyPresenceCallback([](const Nakama::NPartyPresenceEvent& nEvent) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnPartyPresence, 
+                PartyPresenceEvent::FromNakama(nEvent));
+            });
+        m_Listener.setStatusPresenceCallback([](const Nakama::NStatusPresenceEvent& nEvent) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnStatusPresence, 
+                StatusPresenceEvent::FromNakama(nEvent));
+            });
+        m_Listener.setStreamPresenceCallback([](const Nakama::NStreamPresenceEvent& nEvent) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnStreamPresence, 
+                StreamPresenceEvent::FromNakama(nEvent));
+            });
+        m_Listener.setStreamDataCallback([](const Nakama::NStreamData& nData) {
+            NakamaNotificationBus::Broadcast(
+                &NakamaNotificationBus::Events::OnStreamData, 
+                StreamData::FromNakama(nData));
+            });
+
         m_RtClient->setListener(&m_Listener);
 
         NakamaNotificationBus::Broadcast(
