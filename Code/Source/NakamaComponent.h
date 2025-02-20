@@ -1286,6 +1286,11 @@ namespace NakamaClientGem
         void OnAuthenticateSuccess(const Nakama::NSessionPtr& session);
         void OnAuthenticateFailed(const Nakama::NError& error);
 
+        void OnLinkSuccess();
+        void OnLinkFailed(const Error& error);
+
+        void OnUnauthenticated();
+
     protected:
         /*
         * Puts this component into an active state.

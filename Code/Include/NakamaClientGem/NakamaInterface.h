@@ -1233,7 +1233,7 @@ namespace NakamaClientGem
         // Listener
         virtual void OnConnect() = 0;
         virtual void OnDisconnect(const RtClientDisconnectInfo& info) = 0;
-        virtual void OnError(const RtError& error) = 0;
+        virtual void OnRtError(const RtError& error) = 0;
         virtual void OnChannelMessage(const ChannelMessage& message) = 0;
         virtual void OnChannelPresence(const ChannelPresenceEvent& presenceEvent) = 0;
         virtual void OnMatchmakerMatched(const MatchmakerMatched& matched) = 0;
@@ -1251,9 +1251,16 @@ namespace NakamaClientGem
         virtual void OnStreamPresence(const StreamPresenceEvent& presenceEvent) = 0;
         virtual void OnStreamData(const StreamData& data) = 0;
 
+        virtual void OnError(const Error& error) = 0;
+
         virtual void OnAuthenticateSuccess(const AZStd::string& username,const AZStd::string& userId) = 0;
         virtual void OnAuthenticateFailed(AZ::s8 code, const AZStd::string& message) = 0;
 
+        virtual void OnLinkSuccess() = 0;
+        virtual void OnLinkFailed(const Error& error) = 0;
+
+
+        virtual void OnUnauthenticated() = 0;
     };
 
     using NakamaNotificationBus = AZ::EBus<NakamaNotifications>;
@@ -1265,8 +1272,8 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaNotificationHandler,
             "{9B3ABC85-8E49-44C7-9BF1-D2CC119DB8BF}",
-            AZ::SystemAllocator, OnConnect, OnDisconnect, OnError, OnChannelMessage, OnChannelPresence, OnMatchmakerMatched, OnMatchData, OnMatchPresence, OnNotifications, OnParty, OnPartyClosed, OnPartyData, OnPartyJoinRequest, OnPartyLeader, OnPartyMatchmakerTicket, OnPartyPresence, OnStatusPresence, OnStreamPresence, OnStreamData,
-            OnAuthenticateSuccess, OnAuthenticateFailed
+            AZ::SystemAllocator, OnConnect, OnDisconnect, OnRtError, OnChannelMessage, OnChannelPresence, OnMatchmakerMatched, OnMatchData, OnMatchPresence, OnNotifications, OnParty, OnPartyClosed, OnPartyData, OnPartyJoinRequest, OnPartyLeader, OnPartyMatchmakerTicket, OnPartyPresence, OnStatusPresence, OnStreamPresence, OnStreamData, OnError,
+            OnAuthenticateSuccess, OnAuthenticateFailed, OnLinkSuccess, OnLinkFailed, OnUnauthenticated
         );
 
         // ÊÂ¼þÓ³Éä
@@ -1280,9 +1287,9 @@ namespace NakamaClientGem
             Call(FN_OnDisconnect, info);
         }
 
-        void OnError(const RtError& error) override 
+        void OnRtError(const RtError& error) override 
         {
-            Call(FN_OnError, error);
+            Call(FN_OnRtError, error);
         }
         void OnChannelMessage(const ChannelMessage& message) override 
         {
@@ -1349,6 +1356,11 @@ namespace NakamaClientGem
             Call(FN_OnStreamData, data);
         }
 
+        void OnError(const Error& error) override
+        {
+            Call(FN_OnError, error);
+        }
+
         void OnAuthenticateSuccess(const AZStd::string& username, const AZStd::string& userId) override 
         {
             Call(FN_OnAuthenticateSuccess, username, userId);
@@ -1356,6 +1368,20 @@ namespace NakamaClientGem
         void OnAuthenticateFailed(AZ::s8 code, const AZStd::string& message) override 
         { 
             Call(FN_OnAuthenticateFailed, code, message);
+        }
+
+        void OnLinkSuccess() override
+        {
+            Call(FN_OnLinkSuccess);
+        }
+        void OnLinkFailed(const Error& error) override
+        {
+            Call(FN_OnLinkFailed, error);
+        }
+        
+        void OnUnauthenticated() override
+        {
+            Call(FN_OnUnauthenticated);
         }
     };
 } // namespace NakamaClientGem
