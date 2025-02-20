@@ -2,7 +2,7 @@
 #pragma once
 
 #include <AzCore/Component/ComponentBus.h>
-
+#include <AzCore/RTTI/BehaviorContext.h>
 #include "NakamaClientDataTypes.h"
 
 namespace NakamaClientGem
@@ -22,15 +22,50 @@ namespace NakamaClientGem
           * @param create True if the user should be created when authenticated. Defaults to false.
           * @param vars Extra information that will be bundled in the session token.
           */
-         
         virtual void AuthenticateDevice(const AZStd::string& id, const AZStd::string& username, bool create = false, const AZStringMap& vars = {}) = 0;
 
         // Put notification events here. Examples:
         // void RegisterEvent(AZ::EventHandler<...> notifyHandler);
         // AZ::Event<...> m_notifyEvent1;
-        
+
     };
 
     using NakamaRequestBus = AZ::EBus<NakamaRequests>;
 
+    class NakamaNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaNotifications, "{254B173E-E851-4579-856F-B325C967D107}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        // Listener
+        virtual void OnConnect() = 0;
+        /*
+        virtual void OnDisconnect(const RtClientDisconnectInfo& info) = 0;
+        virtual void OnError(const RtError& error) = 0;
+        virtual void OnChannelMessage(const ChannelMessage& message) = 0;
+        virtual void OnChannelPresence(const ChannelPresenceEvent& presence) = 0;
+        virtual void OnMatchmakerMatched(const MatchmakerMatched& matched) = 0;
+        virtual void OnMatchData(const MatchData& matchData) = 0;
+        virtual void OnMatchPresence(const MatchPresenceEvent& matchPresence) = 0;
+        virtual void OnNotifications(const NotificationList& notifications) = 0;
+        virtual void OnParty(const Party& party) = 0;
+        virtual void OnPartyClosed(const PartyClose& partyClosed) = 0;
+        virtual void OnPartyData(const PartyData& partyData) = 0;
+        virtual void OnPartyJoinRequest(const PartyJoinRequest& partyJoinRequest) = 0;
+        virtual void OnPartyLeader(const PartyLeader& partyLeader) = 0;
+        virtual void OnPartyMatchmakerTicket(const PartyMatchmakerTicket& partyMatchmakerTicket) = 0;
+        virtual void OnPartyPresence(const PartyPresenceEvent& partyPresence) = 0;
+        virtual void OnStatusPresence(const StatusPresenceEvent& presence) = 0;
+        virtual void OnStreamPresence(const StreamPresenceEvent& presence) = 0;
+        virtual void OnStreamData(const StreamData& data) = 0;
+        */
+        virtual void OnAuthenticateSuccess(const AZStd::string& authToken,const AZStd::string& refreshToken,AZ::u64 expireTime,const AZStd::string& username,const AZStd::string& userId) = 0;
+        virtual void OnAuthenticateFailed(AZ::s8 code, const AZStd::string& message) = 0;
+
+    };
+
+    using NakamaNotificationBus = AZ::EBus<NakamaNotifications>;
 } // namespace NakamaClientGem

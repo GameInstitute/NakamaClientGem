@@ -82,6 +82,26 @@ namespace NakamaClientGem
     {
         AZ_Warning("AuthenticateDevice", true, R"(%s %s %d %d)", id.c_str(), username.c_str(), create, vars.size());
 
-
+        m_Client->authenticateDevice(
+            id.c_str(),
+            username.c_str(),
+            create,
+            {},
+            [this](Nakama::NSessionPtr nSession)
+            {
+                OnAuthenticateSuccess(nSession);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnAuthenticateFailed(nError);
+            }
+        );
+    }
+    void NakamaComponent::OnAuthenticateSuccess(const Nakama::NSessionPtr& session)
+    {
+        m_Session = session;
+    }
+    void NakamaComponent::OnAuthenticateFailed(const Nakama::NError&)
+    {
     }
 } // namespace NakamaClientGem
