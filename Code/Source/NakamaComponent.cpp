@@ -54,11 +54,15 @@ namespace NakamaClientGem
 
         if (AZ::BehaviorContext* behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
         {
+            behaviorContext->EBus<NakamaNotificationBus>("NakamaNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "Multiplayer") 
+                ->Handler<NakamaNotificationHandler>();
 
             behaviorContext->Class<NakamaComponent>("Nakama Component")
                 ->Attribute(AZ::Script::Attributes::Category, "NakamaClient")
                 ->Method("AuthenticateDevice",&NakamaComponent::AuthenticateDevice);
                 ;
+
         }
     }
 
@@ -97,11 +101,42 @@ namespace NakamaClientGem
             }
         );
     }
+    void NakamaComponent::OnConnect()
+    {
+        NakamaNotificationBus::Broadcast(
+            &NakamaNotificationBus::Events::OnConnect
+        );
+    }
+    void NakamaComponent::OnDisconnect(const RtClientDisconnectInfo&)
+    {
+    }
     void NakamaComponent::OnAuthenticateSuccess(const Nakama::NSessionPtr& session)
     {
         m_Session = session;
+
+        m_Listener.setConnectCallback([this]() {
+            OnConnect();
+            });
+        m_Listener.setDisconnectCallback([this](const Nakama::NRtClientDisconnectInfo& nInfo) {
+            OnDisconnect(RtClientDisconnectInfo::FromNakama(nInfo));
+            });
+
+        m_RtClient->setListener(&m_Listener);
+
+        NakamaNotificationBus::Broadcast(
+            &NakamaNotificationBus::Events::OnAuthenticateSuccess,
+            m_Session->getUsername().c_str(),
+            m_Session->getUserId().c_str()
+        );
+
+        m_RtClient->connect(m_Session, true);
     }
-    void NakamaComponent::OnAuthenticateFailed(const Nakama::NError&)
+    void NakamaComponent::OnAuthenticateFailed(const Nakama::NError& error)
     {
+        NakamaNotificationBus::Broadcast(
+            &NakamaNotificationBus::Events::OnAuthenticateFailed,
+            static_cast<AZ::s8>(error.code),
+            error.message.c_str()
+        );
     }
 } // namespace NakamaClientGem

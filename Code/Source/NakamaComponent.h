@@ -74,6 +74,9 @@ namespace NakamaClientGem
         virtual void AuthenticateDevice(const AZStd::string& id, const AZStd::string& username, bool create = false, const AZStringMap& vars = {}) override;
 
         // Callbacks
+        void OnConnect();
+        void OnDisconnect(const RtClientDisconnectInfo& info);
+
         void OnAuthenticateSuccess(const Nakama::NSessionPtr& session);
         void OnAuthenticateFailed(const Nakama::NError& error);
 

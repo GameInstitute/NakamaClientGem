@@ -62,10 +62,37 @@ namespace NakamaClientGem
         virtual void OnStreamPresence(const StreamPresenceEvent& presence) = 0;
         virtual void OnStreamData(const StreamData& data) = 0;
         */
-        virtual void OnAuthenticateSuccess(const AZStd::string& authToken,const AZStd::string& refreshToken,AZ::u64 expireTime,const AZStd::string& username,const AZStd::string& userId) = 0;
+        virtual void OnAuthenticateSuccess(const AZStd::string& username,const AZStd::string& userId) = 0;
         virtual void OnAuthenticateFailed(AZ::s8 code, const AZStd::string& message) = 0;
 
     };
 
     using NakamaNotificationBus = AZ::EBus<NakamaNotifications>;
+
+    class NakamaNotificationHandler
+        : public NakamaNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaNotificationHandler,
+            "{9B3ABC85-8E49-44C7-9BF1-D2CC119DB8BF}",
+            AZ::SystemAllocator, OnConnect,
+            OnAuthenticateSuccess, OnAuthenticateFailed
+        );
+
+        // ÊÂ¼þÓ³Éä
+        void OnConnect() override 
+        {
+            Call(FN_OnConnect);
+        }
+
+        void OnAuthenticateSuccess(const AZStd::string& username, const AZStd::string& userId) override 
+        {
+            Call(FN_OnAuthenticateSuccess, username, userId);
+        }
+        void OnAuthenticateFailed(AZ::s8 code, const AZStd::string& message) override 
+        { 
+            Call(FN_OnAuthenticateFailed, code, message);
+        }
+    };
 } // namespace NakamaClientGem

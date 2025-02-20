@@ -63,6 +63,7 @@
 
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzCore/RTTI/ReflectContext.h>
+#include <AzCore/Serialization/EditContext.h>
 
 namespace NakamaClientGem
 {
@@ -151,6 +152,15 @@ namespace NakamaClientGem
                     ->Field("reason", &RtClientDisconnectInfo::reason)
                     ->Field("remote", &RtClientDisconnectInfo::remote)
                     ;
+
+                if (auto editContext = serializeContext->GetEditContext())
+                {
+                    editContext->Class<RtClientDisconnectInfo>("RtClientDisconnectInfo", "Description")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &RtClientDisconnectInfo::code, "Code", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &RtClientDisconnectInfo::reason, "Reason", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &RtClientDisconnectInfo::remote, "Remote", "");
+                }
             }
         }
 
