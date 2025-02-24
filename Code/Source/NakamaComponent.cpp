@@ -592,27 +592,164 @@ namespace NakamaClientGem
             OnUnauthenticated();
             return;
         }
+        m_Client->unlinkFacebook(
+            m_Session,
+            accessToken.c_str(),
+            [this]()
+            {
+                OnLinkSuccess();
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnLinkFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::unlinkEmail(const AZStd::string& email, const AZStd::string& password)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->unlinkEmail(
+            m_Session,
+            email.c_str(),
+            password.c_str(),
+            [this]()
+            {
+                OnLinkSuccess();
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnLinkFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::unlinkGoogle(const AZStd::string& accessToken)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->unlinkGoogle(
+            m_Session,
+            accessToken.c_str(),
+            [this]()
+            {
+                OnLinkSuccess();
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnLinkFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::unlinkGameCenter(const AZStd::string& playerId, const AZStd::string& bundleId, AZ::u64 timestampSeconds, const AZStd::string& salt, const AZStd::string& signature, const AZStd::string& publicKeyUrl)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->unlinkGameCenter(
+            m_Session,
+            playerId.c_str(),
+            bundleId.c_str(),
+            timestampSeconds,
+            salt.c_str(),
+            signature.c_str(),
+            publicKeyUrl.c_str(),
+            [this]()
+            {
+                OnLinkSuccess();
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnLinkFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::unlinkApple(const AZStd::string& token)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->unlinkApple(
+            m_Session,
+            token.c_str(),
+            [this]()
+            {
+                OnLinkSuccess();
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnLinkFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::unlinkSteam(const AZStd::string& token)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->unlinkSteam(
+            m_Session,
+            token.c_str(),
+            [this]()
+            {
+                OnLinkSuccess();
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnLinkFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::unlinkDevice(const AZStd::string& id)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->unlinkDevice(
+            m_Session,
+            id.c_str(),
+            [this]()
+            {
+                OnLinkSuccess();
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnLinkFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::unlinkCustom(const AZStd::string& id)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->unlinkCustom(
+            m_Session,
+            id.c_str(),
+            [this]()
+            {
+                OnLinkSuccess();
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnLinkFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::importFacebookFriends(const AZStd::string& token, bool reset)
     {
