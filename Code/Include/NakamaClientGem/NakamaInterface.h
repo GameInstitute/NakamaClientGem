@@ -1222,11 +1222,11 @@ namespace NakamaClientGem
 
     using NakamaRequestBus = AZ::EBus<NakamaRequests>;
 
-    class NakamaNotifications
+    class NakamaListenerNotifications
         : public AZ::EBusTraits
     {
     public:
-        AZ_RTTI(NakamaClientGem::NakamaNotifications, "{254B173E-E851-4579-856F-B325C967D107}");
+        AZ_RTTI(NakamaClientGem::NakamaListenerNotifications, "{254B173E-E851-4579-856F-B325C967D107}");
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
@@ -1259,21 +1259,23 @@ namespace NakamaClientGem
         virtual void OnLinkSuccess() = 0;
         virtual void OnLinkFailed(const Error& error) = 0;
 
+        virtual void OnUnlinkSuccess() = 0;
+        virtual void OnUnlinkFailed(const Error& error) = 0;
 
         virtual void OnUnauthenticated() = 0;
     };
 
-    using NakamaNotificationBus = AZ::EBus<NakamaNotifications>;
+    using NakamaListenerNotificationBus = AZ::EBus<NakamaListenerNotifications>;
 
-    class NakamaNotificationHandler
-        : public NakamaNotificationBus::Handler
+    class NakamaListenerNotificationHandler
+        : public NakamaListenerNotificationBus::Handler
         , public AZ::BehaviorEBusHandler {
     public:
         AZ_EBUS_BEHAVIOR_BINDER(
-            NakamaNotificationHandler,
+            NakamaListenerNotificationHandler,
             "{9B3ABC85-8E49-44C7-9BF1-D2CC119DB8BF}",
             AZ::SystemAllocator, OnConnect, OnDisconnect, OnRtError, OnChannelMessage, OnChannelPresence, OnMatchmakerMatched, OnMatchData, OnMatchPresence, OnNotifications, OnParty, OnPartyClosed, OnPartyData, OnPartyJoinRequest, OnPartyLeader, OnPartyMatchmakerTicket, OnPartyPresence, OnStatusPresence, OnStreamPresence, OnStreamData, OnError,
-            OnAuthenticateSuccess, OnAuthenticateFailed, OnLinkSuccess, OnLinkFailed, OnUnauthenticated
+            OnAuthenticateSuccess, OnAuthenticateFailed, OnLinkSuccess, OnLinkFailed, OnUnauthenticated, OnUnlinkSuccess, OnUnlinkFailed
         );
 
         // ÊÂ¼þÓ³Éä
@@ -1382,6 +1384,15 @@ namespace NakamaClientGem
         void OnUnauthenticated() override
         {
             Call(FN_OnUnauthenticated);
+        }
+
+        void OnUnlinkSuccess() override
+        {
+            Call(FN_OnUnlinkSuccess);
+        }
+        void OnUnlinkFailed(const Error& error) override
+        {
+            Call(FN_OnUnlinkFailed, error);
         }
     };
 } // namespace NakamaClientGem

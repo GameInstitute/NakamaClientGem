@@ -116,9 +116,9 @@ namespace NakamaClientGem
 
         if (AZ::BehaviorContext* behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
         {
-            behaviorContext->EBus<NakamaNotificationBus>("NakamaNotification")
-                ->Attribute(AZ::Script::Attributes::Category, "NakamaNotification") 
-                ->Handler<NakamaNotificationHandler>();
+            behaviorContext->EBus<NakamaListenerNotificationBus>("NakamaListenerNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaListenerNotification") 
+                ->Handler<NakamaListenerNotificationHandler>();
 
             behaviorContext->Class<NakamaComponent>("Nakama")
                 ->Attribute(AZ::Script::Attributes::Category, "NakamaClient")
@@ -412,8 +412,8 @@ namespace NakamaClientGem
                     m_Session = nSession;
                 },
                 [](const Nakama::NError& nError) {
-                    NakamaNotificationBus::Broadcast(
-                        &NakamaNotificationBus::Events::OnError, 
+                    NakamaListenerNotificationBus::Broadcast(
+                        &NakamaListenerNotificationBus::Events::OnError, 
                         Error::FromNakama(nError));
                 });
         }
@@ -423,6 +423,7 @@ namespace NakamaClientGem
         if (!m_Session)
         {
             OnUnauthenticated();
+            return;
         }
         m_Client->linkFacebook(
             m_Session,
@@ -443,6 +444,7 @@ namespace NakamaClientGem
         if (!m_Session)
         {
             OnUnauthenticated();
+            return;
         }
         m_Client->linkFacebook(
             m_Session,
@@ -463,6 +465,7 @@ namespace NakamaClientGem
         if (!m_Session)
         {
             OnUnauthenticated();
+            return;
         }
         m_Client->linkDevice(
             m_Session,
@@ -482,6 +485,7 @@ namespace NakamaClientGem
         if (!m_Session)
         {
             OnUnauthenticated();
+            return;
         }
         m_Client->linkGoogle(
             m_Session,
@@ -501,6 +505,7 @@ namespace NakamaClientGem
         if (!m_Session)
         {
             OnUnauthenticated();
+            return;
         }
         m_Client->linkGameCenter(
             m_Session,
@@ -525,6 +530,7 @@ namespace NakamaClientGem
         if (!m_Session)
         {
             OnUnauthenticated();
+            return;
         }
         m_Client->linkApple(
             m_Session,
@@ -544,6 +550,7 @@ namespace NakamaClientGem
         if (!m_Session)
         {
             OnUnauthenticated();
+            return;
         }
         m_Client->linkSteam(
             m_Session,
@@ -563,6 +570,7 @@ namespace NakamaClientGem
         if (!m_Session)
         {
             OnUnauthenticated();
+            return;
         }
         m_Client->linkCustom(
             m_Session,
@@ -579,6 +587,11 @@ namespace NakamaClientGem
     }
     void NakamaComponent::unlinkFacebook(const AZStd::string& accessToken)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
     }
     void NakamaComponent::unlinkEmail(const AZStd::string& email, const AZStd::string& password)
     {
@@ -807,14 +820,14 @@ namespace NakamaClientGem
     }
     void NakamaComponent::OnConnect()
     {
-        NakamaNotificationBus::Broadcast(
-            &NakamaNotificationBus::Events::OnConnect
+        NakamaListenerNotificationBus::Broadcast(
+            &NakamaListenerNotificationBus::Events::OnConnect
         );
     }
     void NakamaComponent::OnDisconnect(const RtClientDisconnectInfo& info)
     {
-        NakamaNotificationBus::Broadcast(
-            &NakamaNotificationBus::Events::OnDisconnect,
+        NakamaListenerNotificationBus::Broadcast(
+            &NakamaListenerNotificationBus::Events::OnDisconnect,
             info
         );
     }
@@ -830,97 +843,97 @@ namespace NakamaClientGem
             });
 
         m_Listener.setErrorCallback([](const Nakama::NRtError& nError) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnRtError,
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnRtError,
                 RtError::FromNakama(nError)
             );
             });
         m_Listener.setChannelMessageCallback([](const Nakama::NChannelMessage& nMessage) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnChannelMessage, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnChannelMessage, 
                 ChannelMessage::FromNakama(nMessage)
             );
             });
         m_Listener.setChannelPresenceCallback([](const Nakama::NChannelPresenceEvent& nEvent) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnChannelPresence,
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnChannelPresence,
                 ChannelPresenceEvent::FromNakama(nEvent));
             });
         m_Listener.setMatchmakerMatchedCallback([](Nakama::NMatchmakerMatchedPtr matchedPtr) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnMatchmakerMatched, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnMatchmakerMatched, 
                 MatchmakerMatched::FromNakama(*matchedPtr));
             });
         m_Listener.setMatchDataCallback([](const Nakama::NMatchData& nData) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnMatchData, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnMatchData, 
                 MatchData::FromNakama(nData));
             });
         m_Listener.setMatchPresenceCallback([](const Nakama::NMatchPresenceEvent& nEvent) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnMatchPresence,
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnMatchPresence,
                 MatchPresenceEvent::FromNakama(nEvent));
             });
         m_Listener.setNotificationsCallback([](const Nakama::NNotificationList& nList) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnNotifications, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnNotifications, 
                 NotificationList::FromNakama(nList));
             });
         m_Listener.setPartyCallback([](const Nakama::NParty& nParty) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnParty, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnParty, 
                 Party::FromNakama(nParty));
             });
         m_Listener.setPartyCloseCallback([](const Nakama::NPartyClose& nPartyClose) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnPartyClosed, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnPartyClosed, 
                 PartyClose::FromNakama(nPartyClose));
             });
         m_Listener.setPartyDataCallback([](const Nakama::NPartyData& nData) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnPartyData, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnPartyData, 
                 PartyData::FromNakama(nData));
             });
         m_Listener.setPartyJoinRequestCallback([](const Nakama::NPartyJoinRequest& nRequest) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnPartyJoinRequest, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnPartyJoinRequest, 
                 PartyJoinRequest::FromNakama(nRequest));
             });
         m_Listener.setPartyLeaderCallback([](const Nakama::NPartyLeader& nLeader) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnPartyLeader, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnPartyLeader, 
                 PartyLeader::FromNakama(nLeader));
             });
         m_Listener.setPartyMatchmakerTicketCallback([](const Nakama::NPartyMatchmakerTicket& nTicket) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnPartyMatchmakerTicket, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnPartyMatchmakerTicket, 
                 PartyMatchmakerTicket::FromNakama(nTicket));
             });
         m_Listener.setPartyPresenceCallback([](const Nakama::NPartyPresenceEvent& nEvent) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnPartyPresence, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnPartyPresence, 
                 PartyPresenceEvent::FromNakama(nEvent));
             });
         m_Listener.setStatusPresenceCallback([](const Nakama::NStatusPresenceEvent& nEvent) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnStatusPresence, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnStatusPresence, 
                 StatusPresenceEvent::FromNakama(nEvent));
             });
         m_Listener.setStreamPresenceCallback([](const Nakama::NStreamPresenceEvent& nEvent) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnStreamPresence, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnStreamPresence, 
                 StreamPresenceEvent::FromNakama(nEvent));
             });
         m_Listener.setStreamDataCallback([](const Nakama::NStreamData& nData) {
-            NakamaNotificationBus::Broadcast(
-                &NakamaNotificationBus::Events::OnStreamData, 
+            NakamaListenerNotificationBus::Broadcast(
+                &NakamaListenerNotificationBus::Events::OnStreamData, 
                 StreamData::FromNakama(nData));
             });
 
         m_RtClient->setListener(&m_Listener);
 
-        NakamaNotificationBus::Broadcast(
-            &NakamaNotificationBus::Events::OnAuthenticateSuccess,
+        NakamaListenerNotificationBus::Broadcast(
+            &NakamaListenerNotificationBus::Events::OnAuthenticateSuccess,
             m_Session->getUsername().c_str(),
             m_Session->getUserId().c_str()
         );
@@ -929,29 +942,35 @@ namespace NakamaClientGem
     }
     void NakamaComponent::OnAuthenticateFailed(const Nakama::NError& error)
     {
-        NakamaNotificationBus::Broadcast(
-            &NakamaNotificationBus::Events::OnAuthenticateFailed,
+        NakamaListenerNotificationBus::Broadcast(
+            &NakamaListenerNotificationBus::Events::OnAuthenticateFailed,
             static_cast<AZ::s8>(error.code),
             error.message.c_str()
         );
     }
     void NakamaComponent::OnLinkSuccess()
     {
-        NakamaNotificationBus::Broadcast(
-            &NakamaNotificationBus::Events::OnLinkSuccess
+        NakamaListenerNotificationBus::Broadcast(
+            &NakamaListenerNotificationBus::Events::OnLinkSuccess
         );
     }
     void NakamaComponent::OnLinkFailed(const Error& error)
     {
-        NakamaNotificationBus::Broadcast(
-            &NakamaNotificationBus::Events::OnLinkFailed,
+        NakamaListenerNotificationBus::Broadcast(
+            &NakamaListenerNotificationBus::Events::OnLinkFailed,
             error
         );
     }
+    void NakamaComponent::OnUnlinkSuccess()
+    {
+    }
+    void NakamaComponent::OnUnlinkFailed(const Error& error)
+    {
+    }
     void NakamaComponent::OnUnauthenticated()
     {
-        NakamaNotificationBus::Broadcast(
-            &NakamaNotificationBus::Events::OnUnauthenticated
+        NakamaListenerNotificationBus::Broadcast(
+            &NakamaListenerNotificationBus::Events::OnUnauthenticated
         );
     }
 } // namespace NakamaClientGem

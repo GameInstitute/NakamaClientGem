@@ -1289,6 +1289,9 @@ namespace NakamaClientGem
         void OnLinkSuccess();
         void OnLinkFailed(const Error& error);
 
+        void OnUnlinkSuccess();
+        void OnUnlinkFailed(const Error& error);
+
         void OnUnauthenticated();
 
     protected:
