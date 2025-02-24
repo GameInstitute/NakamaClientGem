@@ -1298,6 +1298,15 @@ namespace NakamaClientGem
 
         void OnUnauthenticated();
 
+        void OnGetAccountSuccess(const Account& account);
+        void OnGetAccountFailed(const Error& error);
+
+        void OnUpdateAccountSuccess(const AZStd::string& username, const AZStd::string& displayName, const AZStd::string& avatarUrl, const AZStd::string& langTag, const AZStd::string& location, const AZStd::string& timezone);
+        void OnUpdateAccountFailed(const Error& error);
+
+        void OnGetUsersSuccess(const AZStd::vector<User>& users);
+        void OnGetUsersFailed(const Error& error);
+
     protected:
         /*
         * Puts this component into an active state.

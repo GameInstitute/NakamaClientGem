@@ -1416,7 +1416,12 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test () = 0;
+        virtual void OnGetAccountSuccess(const Account& account) = 0;
+        virtual void OnGetAccountFailed(const Error& error) = 0;
+        virtual void OnUpdateAccountSuccess(const AZStd::string& username, const AZStd::string& displayName, const AZStd::string& avatarUrl, const AZStd::string& langTag, const AZStd::string& location, const AZStd::string& timezone) = 0;
+        virtual void OnUpdateAccountFailed(const Error& error) = 0;
+        virtual void OnGetUsersSuccess(const AZStd::vector<User>& users) = 0;
+        virtual void OnGetUsersFailed(const Error& error) = 0;
     };
     using NakamaAccountNotificationBus = AZ::EBus<NakamaAccountNotifications>;
     class NakamaAccountNotificationHandler
@@ -1426,11 +1431,32 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaAccountNotificationHandler,
             "{04C68A75-B0C1-4EFA-A8FF-D6DE2300F032}",
-            AZ::SystemAllocator, Test);
+            AZ::SystemAllocator, OnGetAccountSuccess, OnGetAccountFailed, OnUpdateAccountSuccess, OnUpdateAccountFailed, OnGetUsersSuccess, OnGetUsersFailed);
 
-        void Test() override
+        void OnGetAccountSuccess(const Account& account) override
         {
-            Call(FN_Test);
+            Call(FN_OnGetAccountSuccess, account);
+        }
+        void OnGetAccountFailed(const Error& error) override
+        {
+            Call(FN_OnGetAccountFailed, error);
+        }
+
+        void OnUpdateAccountSuccess(const AZStd::string& username, const AZStd::string& displayName, const AZStd::string& avatarUrl, const AZStd::string& langTag, const AZStd::string& location, const AZStd::string& timezone) override
+        {
+            Call(FN_OnUpdateAccountSuccess, username, displayName, avatarUrl, langTag, location, timezone);
+        }
+        void OnUpdateAccountFailed(const Error& error) override
+        {
+            Call(FN_OnUpdateAccountFailed, error);
+        }
+        void OnGetUsersSuccess(const AZStd::vector<User>& users) override
+        {
+            Call(FN_OnGetUsersSuccess, users);
+        }
+        void OnGetUsersFailed(const Error& error) override
+        {
+            Call(FN_OnGetUsersFailed, error);
         }
     };
 

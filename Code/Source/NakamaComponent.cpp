@@ -810,12 +810,132 @@ namespace NakamaClientGem
     }
     void NakamaComponent::getAccount()
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->getAccount(
+            m_Session,
+            [this](const Nakama::NAccount& account)
+            {
+                OnGetAccountSuccess(Account::FromNakama(account));
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnGetAccountFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::updateAccount(const AZStd::string& username, const AZStd::string& displayName, const AZStd::string& avatarUrl, const AZStd::string& langTag, const AZStd::string& location, const AZStd::string& timezone)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        Nakama::opt::optional<std::string> n_username = Nakama::opt::nullopt;
+        if (!username.empty())
+        {
+            n_username = username.c_str();
+        }
+        Nakama::opt::optional<std::string> n_displayName = Nakama::opt::nullopt;
+        if (!displayName.empty())
+        {
+            n_displayName = displayName.c_str();
+        }
+        Nakama::opt::optional<std::string> n_avatarUrl = Nakama::opt::nullopt;
+        if (!avatarUrl.empty())
+        {
+            n_avatarUrl = avatarUrl.c_str();
+        }
+        Nakama::opt::optional<std::string> n_langTag = Nakama::opt::nullopt;
+        if (!langTag.empty())
+        {
+            n_langTag = langTag.c_str();
+        }
+        Nakama::opt::optional<std::string> n_location = Nakama::opt::nullopt;
+        if (!location.empty())
+        {
+            n_location = location.c_str();
+        }
+        Nakama::opt::optional<std::string> n_timezone = Nakama::opt::nullopt;
+        if (!timezone.empty())
+        {
+            n_timezone = timezone.c_str();
+        }
+        m_Client->updateAccount(
+            m_Session,
+            n_username,
+            n_displayName,
+            n_avatarUrl,
+            n_langTag,
+            n_location,
+            n_timezone,
+            [this, username, displayName, avatarUrl, langTag, location, timezone]()
+            {
+                OnUpdateAccountSuccess(username, displayName, avatarUrl, langTag, location, timezone);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnUpdateAccountFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::getUsers(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames, const AZStd::vector<AZStd::string>& facebookIds)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<std::string> n_ids;
+        if (ids.size() > 0)
+        {
+            for (auto& id : ids)
+            {
+                n_ids.push_back(id.c_str());
+            }
+        }
+        std::vector<std::string> n_usernames;
+        if (usernames.size() > 0)
+        {
+            for (auto& username : usernames)
+            {
+                n_usernames.push_back(username.c_str());
+            }
+        }
+        std::vector<std::string> n_facebookIds;
+        if (facebookIds.size() > 0)
+        {
+            for (auto& facebookId : facebookIds)
+            {
+                n_facebookIds.push_back(facebookId.c_str());
+            }
+        }
+
+        m_Client->getUsers(
+            m_Session,
+            n_ids,
+            n_usernames,
+            n_facebookIds,
+            [this](const Nakama::NUsers& nUsers)
+            {
+                AZStd::vector<User> users;
+                if (nUsers.users.size() > 0)
+                {
+                    for (auto& user : nUsers.users)
+                    {
+                        users.push_back(User::FromNakama(user));
+                    }
+                }
+                OnGetUsersSuccess(users);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnGetUsersFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::addFriends(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames)
     {
@@ -1182,6 +1302,53 @@ namespace NakamaClientGem
     {
         NakamaListenerNotificationBus::Broadcast(
             &NakamaListenerNotificationBus::Events::OnUnauthenticated
+        );
+    }
+    void NakamaComponent::OnGetAccountSuccess(const Account& account)
+    {
+        NakamaAccountNotificationBus::Broadcast(
+            &NakamaAccountNotificationBus::Events::OnGetAccountSuccess,
+            account
+        );
+    }
+    void NakamaComponent::OnGetAccountFailed(const Error& error)
+    {
+        NakamaAccountNotificationBus::Broadcast(
+            &NakamaAccountNotificationBus::Events::OnGetAccountFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnUpdateAccountSuccess(const AZStd::string& username, const AZStd::string& displayName, const AZStd::string& avatarUrl, const AZStd::string& langTag, const AZStd::string& location, const AZStd::string& timezone)
+    {
+        NakamaAccountNotificationBus::Broadcast(
+            &NakamaAccountNotificationBus::Events::OnUpdateAccountSuccess,
+            username,
+            displayName,
+            avatarUrl,
+            langTag,
+            location,
+            timezone
+        );
+    }
+    void NakamaComponent::OnUpdateAccountFailed(const Error& error)
+    {
+        NakamaAccountNotificationBus::Broadcast(
+            &NakamaAccountNotificationBus::Events::OnUpdateAccountFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnGetUsersSuccess(const AZStd::vector<User>& users)
+    {
+        NakamaAccountNotificationBus::Broadcast(
+            &NakamaAccountNotificationBus::Events::OnGetUsersSuccess,
+            users
+        );
+    }
+    void NakamaComponent::OnGetUsersFailed(const Error& error)
+    {
+        NakamaAccountNotificationBus::Broadcast(
+            &NakamaAccountNotificationBus::Events::OnGetUsersFailed,
+            error
         );
     }
 } // namespace NakamaClientGem
