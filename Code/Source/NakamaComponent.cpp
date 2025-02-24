@@ -119,6 +119,42 @@ namespace NakamaClientGem
             behaviorContext->EBus<NakamaListenerNotificationBus>("NakamaListenerNotification")
                 ->Attribute(AZ::Script::Attributes::Category, "NakamaListenerNotification") 
                 ->Handler<NakamaListenerNotificationHandler>();
+            behaviorContext->EBus<NakamaAccountNotificationBus>("NakamaAccountNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaAccountNotification") 
+                ->Handler<NakamaAccountNotificationHandler>();
+            behaviorContext->EBus<NakamaFriendsNotificationBus>("NakamaFriendsNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaFriendsNotification") 
+                ->Handler<NakamaFriendsNotificationHandler>();
+            behaviorContext->EBus<NakamaGroupsNotificationBus>("NakamaGroupsNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaGroupsNotification") 
+                ->Handler<NakamaGroupsNotificationHandler>();
+            behaviorContext->EBus<NakamaLeaderboardsNotificationBus>("NakamaLeaderboardsNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaLeaderboardsNotification") 
+                ->Handler<NakamaLeaderboardsNotificationHandler>();
+            behaviorContext->EBus<NakamaMatchesNotificationBus>("NakamaMatchesNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaMatchesNotification") 
+                ->Handler<NakamaMatchesNotificationHandler>();
+            behaviorContext->EBus<NakamaNotificationsNotificationBus>("NakamaNotificationsNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaNotificationsNotification") 
+                ->Handler<NakamaNotificationsNotificationHandler>();
+            behaviorContext->EBus<NakamaChatNotificationBus>("NakamaChatNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaChatNotification") 
+                ->Handler<NakamaChatNotificationHandler>();
+            behaviorContext->EBus<NakamaStorageObjectsNotificationBus>("NakamaStorageObjectsNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaStorageObjectsNotification") 
+                ->Handler<NakamaStorageObjectsNotificationHandler>();
+            behaviorContext->EBus<NakamaTournamentsNotificationBus>("NakamaTournamentsNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaTournamentsNotification") 
+                ->Handler<NakamaTournamentsNotificationHandler>();
+            behaviorContext->EBus<NakamaRpcNotificationBus>("NakamaRpcNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaRpcNotification") 
+                ->Handler<NakamaRpcNotificationHandler>();
+            behaviorContext->EBus<NakamaPartyNotificationBus>("NakamaPartyNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaPartyNotification") 
+                ->Handler<NakamaPartyNotificationHandler>();
+            behaviorContext->EBus<NakamaMatchmakerNotificationBus>("NakamaMatchmakerNotification")
+                ->Attribute(AZ::Script::Attributes::Category, "NakamaMatchmakerNotification") 
+                ->Handler<NakamaMatchmakerNotificationHandler>();
 
             behaviorContext->Class<NakamaComponent>("Nakama")
                 ->Attribute(AZ::Script::Attributes::Category, "NakamaClient")
