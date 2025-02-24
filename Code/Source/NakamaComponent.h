@@ -853,6 +853,55 @@ namespace NakamaClientGem
             const AZStd::string& query,
             bool authoritative
         ) override;
+
+        /**
+         * Create a multiplayer match on the server.
+         */
+        virtual void createMatch() override;
+
+        /**
+         * Join a multiplayer match by ID.
+         *
+         * @param matchId A match ID.
+         */
+        virtual void joinMatch(
+            const AZStd::string& matchId,
+            const AZStringMap& metadata
+        ) override;
+
+        /**
+         * Join a multiplayer match with a matchmaker.
+         *
+         * @param token A matchmaker ticket result object.
+         */
+        virtual void joinMatchByToken(
+            const AZStd::string& token
+        ) override;
+
+        /**
+         * Leave a match on the server.
+         *
+         * @param matchId The match to leave.
+         */
+        virtual void leaveMatch(
+            const AZStd::string& matchId
+        ) override;
+        /**
+          * Send a state change to a match on the server.
+          *
+          * When no presences are supplied the new match state will be sent to all presences.
+          *
+          * @param matchId The Id of the match.
+          * @param opCode An operation code for the match state.
+          * @param data The new state to send to the match.
+          * @param presences The presences in the match to send the state.
+          */
+        virtual void sendMatchData(
+            const AZStd::string& matchId,
+            AZ::s64 opCode,
+            const AZStd::string& data,
+            const AZStd::vector<UserPresence>& presences
+        ) override;
 #pragma endregion
 
 #pragma region Notifications
@@ -894,6 +943,64 @@ namespace NakamaClientGem
             AZ::s32 limit,
             const AZStd::string& cursor,
             bool forward
+        ) override;
+        /**
+                * Join a chat channel on the server.
+                *
+                * @param target The target channel to join.
+                * @param type The type of channel to join.
+                * @param persistence True if chat messages should be stored.
+                * @param hidden True if the user should be hidden on the channel.
+                */
+        virtual void joinChat(
+            const AZStd::string& target,
+            AZ::u8 channelType,
+            bool persistence,
+            bool hidden
+        ) override;
+
+        /**
+         * Leave a chat channel on the server.
+         *
+         * @param channelId The channel to leave.
+         */
+        virtual void leaveChat(
+            const AZStd::string& channelId
+        ) override;
+
+        /**
+         * Send a chat message to a channel on the server.
+         *
+         * @param channelId The channel to send on.
+         * @param content The content of the chat message. Must be a JSON object.
+         */
+        virtual void writeChatMessage(
+            const AZStd::string& channelId,
+            const AZStd::string& content
+        ) override;
+
+        /**
+         * Update a chat message to a channel on the server.
+         *
+         * @param channelId The ID of the chat channel with the message.
+         * @param messageId The ID of the message to update.
+         * @param content The content update for the message. Must be a JSON object.
+         */
+        virtual void updateChatMessage(
+            const AZStd::string& channelId,
+            const AZStd::string& messageId,
+            const AZStd::string& content
+        ) override;
+
+        /**
+         * Remove a chat message from a channel on the server.
+         *
+         * @param channelId The chat channel with the message.
+         * @param messageId The ID of a chat message to remove.
+         */
+        virtual void removeChatMessage(
+            const AZStd::string& channelId,
+            const AZStd::string& messageId
         ) override;
 #pragma endregion
 
@@ -984,101 +1091,19 @@ namespace NakamaClientGem
             const AZStd::string& id,
             const AZStd::string& payload
         ) override;
+        /**
+                 * Send an RPC message to the server.
+                 *
+                 * @param id The ID of the function to execute.
+                 * @param payload The string content to send to the server.
+                 */
+        virtual void rtRpc(
+            const AZStd::string& id,
+            const AZStd::string& payload
+        ) override;
 #pragma endregion
 
-#pragma region RealtimeClient
-        /**
-                * Join a chat channel on the server.
-                *
-                * @param target The target channel to join.
-                * @param type The type of channel to join.
-                * @param persistence True if chat messages should be stored.
-                * @param hidden True if the user should be hidden on the channel.
-                */
-        virtual void joinChat(
-            const AZStd::string& target,
-            AZ::u8 channelType,
-            bool persistence,
-            bool hidden
-        ) override;
-
-        /**
-         * Leave a chat channel on the server.
-         *
-         * @param channelId The channel to leave.
-         */
-        virtual void leaveChat(
-            const AZStd::string& channelId
-        ) override;
-
-        /**
-         * Send a chat message to a channel on the server.
-         *
-         * @param channelId The channel to send on.
-         * @param content The content of the chat message. Must be a JSON object.
-         */
-        virtual void writeChatMessage(
-            const AZStd::string& channelId,
-            const AZStd::string& content
-        ) override;
-
-        /**
-         * Update a chat message to a channel on the server.
-         *
-         * @param channelId The ID of the chat channel with the message.
-         * @param messageId The ID of the message to update.
-         * @param content The content update for the message. Must be a JSON object.
-         */
-        virtual void updateChatMessage(
-            const AZStd::string& channelId,
-            const AZStd::string& messageId,
-            const AZStd::string& content
-        ) override;
-
-        /**
-         * Remove a chat message from a channel on the server.
-         *
-         * @param channelId The chat channel with the message.
-         * @param messageId The ID of a chat message to remove.
-         */
-        virtual void removeChatMessage(
-            const AZStd::string& channelId,
-            const AZStd::string& messageId
-        ) override;
-
-        /**
-         * Create a multiplayer match on the server.
-         */
-        virtual void createMatch() override;
-
-        /**
-         * Join a multiplayer match by ID.
-         *
-         * @param matchId A match ID.
-         */
-        virtual void joinMatch(
-            const AZStd::string& matchId,
-            const AZStringMap& metadata
-        ) override;
-
-        /**
-         * Join a multiplayer match with a matchmaker.
-         *
-         * @param token A matchmaker ticket result object.
-         */
-        virtual void joinMatchByToken(
-            const AZStd::string& token
-        ) override;
-
-        /**
-         * Leave a match on the server.
-         *
-         * @param matchId The match to leave.
-         */
-        virtual void leaveMatch(
-            const AZStd::string& matchId
-        ) override;
-
+#pragma region Matchmaker
         /**
          * Join the matchmaker pool and search for opponents on the server.
          *
@@ -1106,24 +1131,9 @@ namespace NakamaClientGem
         virtual void removeMatchmaker(
             const AZStd::string& ticket
         ) override;
+#pragma endregion
 
-        /**
-         * Send a state change to a match on the server.
-         *
-         * When no presences are supplied the new match state will be sent to all presences.
-         *
-         * @param matchId The Id of the match.
-         * @param opCode An operation code for the match state.
-         * @param data The new state to send to the match.
-         * @param presences The presences in the match to send the state.
-         */
-        virtual void sendMatchData(
-            const AZStd::string& matchId,
-            AZ::s64 opCode,
-            const AZStd::string& data,
-            const AZStd::vector<UserPresence>& presences
-        ) override;
-
+#pragma region Party     
         /**
          * Follow one or more users for status updates.
          *
@@ -1151,16 +1161,7 @@ namespace NakamaClientGem
             const AZStd::string& status
         ) override;
 
-        /**
-         * Send an RPC message to the server.
-         *
-         * @param id The ID of the function to execute.
-         * @param payload The string content to send to the server.
-         */
-        virtual void rtRpc(
-            const AZStd::string& id,
-            const AZStd::string& payload
-        ) override;
+        
 
         /**
          * Accept a party member's request to join the party.

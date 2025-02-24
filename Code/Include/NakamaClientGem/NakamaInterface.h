@@ -1407,4 +1407,316 @@ namespace NakamaClientGem
             Call(FN_OnImportFacebookFriendsFailed, error);
         }
     };
+
+    class NakamaAccountNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaAccountNotifications, "{8BB9582B-9DB0-4F13-B72E-5A983A1340AF}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test () = 0;
+    };
+    using NakamaAccountNotificationBus = AZ::EBus<NakamaAccountNotifications>;
+    class NakamaAccountNotificationHandler
+        : public NakamaAccountNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaAccountNotificationHandler,
+            "{04C68A75-B0C1-4EFA-A8FF-D6DE2300F032}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
+
+    class NakamaFriendsNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaFriendsNotifications, "{B095B68D-96A9-4D89-9C71-2ED54F3FD620}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test() = 0;
+    };
+    using NakamaFriendsNotificationBus = AZ::EBus<NakamaFriendsNotifications>;
+    class NakamaFriendsNotificationHandler
+        : public NakamaFriendsNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaFriendsNotificationHandler,
+            "{2DB70277-1C75-44FB-8BB6-2E5321E94A46}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
+
+    class NakamaGroupsNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaGroupsNotifications, "{280F9CCC-E893-4DEC-9D88-1D464E808735}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test() = 0;
+    };
+    using NakamaGroupsNotificationBus = AZ::EBus<NakamaGroupsNotifications>;
+    class NakamaGroupsNotificationHandler
+        : public NakamaGroupsNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaGroupsNotificationHandler,
+            "{52EF4651-DBEE-40FD-9CE7-DE7D8BC83FED}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
+
+    class NakamaLeaderboardsNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaLeaderboardsNotifications, "{F912E45B-32D2-4E40-ACA7-D82FC1EA8656}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test() = 0;
+    };
+    using NakamaLeaderboardsNotificationBus = AZ::EBus<NakamaLeaderboardsNotifications>;
+    class NakamaLeaderboardsNotificationHandler
+        : public NakamaLeaderboardsNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaLeaderboardsNotificationHandler,
+            "{EAEDBEBD-11CA-43A5-A9D8-39A3F6330DA6}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
+
+    class NakamaTournamentsNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaTournamentsNotifications, "{556EE110-E0C0-4446-A69D-738CA04635B9}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test() = 0;
+    };
+    using NakamaTournamentsNotificationBus = AZ::EBus<NakamaTournamentsNotifications>;
+    class NakamaTournamentsNotificationHandler
+        : public NakamaTournamentsNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaTournamentsNotificationHandler,
+            "{30A1E048-513C-485E-8D0F-1EA379450C0B}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
+
+    class NakamaMatchesNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaMatchesNotifications, "{6BDF262A-BD27-4A3B-8743-A01C4447300D}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test() = 0;
+    };
+    using NakamaMatchesNotificationBus = AZ::EBus<NakamaMatchesNotifications>;
+    class NakamaMatchesNotificationHandler
+        : public NakamaMatchesNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaMatchesNotificationHandler,
+            "{F57649CC-57F5-42C2-99B8-EA79F77D41D9}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
+
+    class NakamaNotificationsNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaNotificationsNotifications, "{EC4E654C-0D78-4535-B966-C284BC8DC715}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test() = 0;
+    };
+    using NakamaNotificationsNotificationBus = AZ::EBus<NakamaNotificationsNotifications>;
+    class NakamaNotificationsNotificationHandler
+        : public NakamaNotificationsNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaNotificationsNotificationHandler,
+            "{6AB0487E-2AA6-4B8C-B198-3E2CE1F31331}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
+
+    class NakamaChatNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaChatNotifications, "{F4F44426-D4B8-4A3D-8D5E-7F65BD3E35BE}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test() = 0;
+    };
+    using NakamaChatNotificationBus = AZ::EBus<NakamaChatNotifications>;
+    class NakamaChatNotificationHandler
+        : public NakamaChatNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaChatNotificationHandler,
+            "{E1BCB48C-463C-4B06-AC84-9F73F3E842D0}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
+
+    class NakamaStorageObjectsNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaStorageObjectsNotifications, "{368A4B50-AC04-4A2A-B52F-EAB84B7D2CE1}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test() = 0;
+    };
+    using NakamaStorageObjectsNotificationBus = AZ::EBus<NakamaStorageObjectsNotifications>;
+    class NakamaStorageObjectsNotificationHandler
+        : public NakamaStorageObjectsNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaStorageObjectsNotificationHandler,
+            "{4035B7AE-E793-4016-9805-B6D3F621611E}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
+
+    class NakamaRpcNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaRpcNotifications, "{D0AB1B01-30BB-461E-AA1D-8350E2D1F5D5}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test() = 0;
+    };
+    using NakamaRpcNotificationBus = AZ::EBus<NakamaRpcNotifications>;
+    class NakamaRpcNotificationHandler
+        : public NakamaRpcNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaRpcNotificationHandler,
+            "{F00F49BE-52BA-489A-9D34-8AB3586C8A89}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
+
+    class NakamaMatchmakerNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaMatchmakerNotifications, "{3106A3C0-DF4E-4477-A659-2CFC2C1F6DDF}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test() = 0;
+    };
+    using NakamaMatchmakerNotificationBus = AZ::EBus<NakamaMatchmakerNotifications>;
+    class NakamaMatchmakerNotificationHandler
+        : public NakamaMatchmakerNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaMatchmakerNotificationHandler,
+            "{A43A3233-E5E5-4DAB-AC07-AD8C3E7D268A}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
+
+    class NakamaPartyNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        AZ_RTTI(NakamaClientGem::NakamaPartyNotifications, "{C21A0FE9-71FF-41BD-B714-F3B7A715F36F}");
+
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+
+        virtual void Test() = 0;
+    };
+    using NakamaPartyNotificationBus = AZ::EBus<NakamaPartyNotifications>;
+    class NakamaPartyNotificationHandler
+        : public NakamaPartyNotificationBus::Handler
+        , public AZ::BehaviorEBusHandler {
+    public:
+        AZ_EBUS_BEHAVIOR_BINDER(
+            NakamaPartyNotificationHandler,
+            "{2E8ACED1-A2A2-4DC2-92A0-5AE1DCD72C05}",
+            AZ::SystemAllocator, Test);
+
+        void Test() override
+        {
+            Call(FN_Test);
+        }
+    };
 } // namespace NakamaClientGem
