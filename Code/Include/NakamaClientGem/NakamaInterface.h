@@ -1104,7 +1104,7 @@ namespace NakamaClientGem
          */
         virtual void acceptPartyMember(
             const AZStd::string& partyId,
-            UserPresence& presence
+            const UserPresence& presence
         ) = 0;
 
         /**
@@ -1176,7 +1176,7 @@ namespace NakamaClientGem
          */
         virtual void promotePartyMember(
             const AZStd::string& partyId,
-            UserPresence& partyMember
+            const UserPresence& partyMember
         ) = 0;
 
         /**
@@ -1196,7 +1196,7 @@ namespace NakamaClientGem
          */
         virtual void removePartyMember(
             const AZStd::string& partyId,
-            UserPresence& presence
+            const UserPresence& presence
         ) = 0;
 
         /**
@@ -1743,7 +1743,16 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test() = 0;
+        virtual void OnWriteTournamentRecordSuccess(const LeaderboardRecord& record) = 0;
+        virtual void OnWriteTournamentRecordFailed(const Error& error) = 0;
+        virtual void OnListTournamentsSuccess(const TournamentList& tournaments, AZ::u32 categoryStart, AZ::u32 categoryEnd, AZ::u32 startTime, AZ::u32 endTime, AZ::s32 limit, const AZStd::string& cursor) = 0;
+        virtual void OnListTournamentsFailed(const Error& error) = 0;
+        virtual void OnListTournamentRecordsSuccess(const TournamentRecordList& records, const AZStd::string& tournamentId, AZ::s32 limit, const AZStd::string& cursor, const AZStd::vector<AZStd::string>& ownerIds) = 0;
+        virtual void OnListTournamentRecordsFailed(const Error& error) = 0;
+        virtual void OnListTournamentRecordsAroundOwnerSuccess(const TournamentRecordList& records, const AZStd::string& tournamentId, const AZStd::string& ownerId, AZ::s32 limit) = 0;
+        virtual void OnListTournamentRecordsAroundOwnerFailed(const Error& error) = 0;
+        virtual void OnJoinTournamentSuccess(const AZStd::string& tournamentId) = 0;
+        virtual void OnJoinTournamentFailed(const Error& error) = 0;
     };
     using NakamaTournamentsNotificationBus = AZ::EBus<NakamaTournamentsNotifications>;
     class NakamaTournamentsNotificationHandler
@@ -1753,11 +1762,47 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaTournamentsNotificationHandler,
             "{30A1E048-513C-485E-8D0F-1EA379450C0B}",
-            AZ::SystemAllocator, Test);
+            AZ::SystemAllocator, OnWriteTournamentRecordSuccess, OnWriteTournamentRecordFailed, OnListTournamentsSuccess, OnListTournamentsFailed, OnListTournamentRecordsSuccess, OnListTournamentRecordsFailed, OnListTournamentRecordsAroundOwnerSuccess, OnListTournamentRecordsAroundOwnerFailed, OnJoinTournamentSuccess, OnJoinTournamentFailed);
 
-        void Test() override
+        void OnWriteTournamentRecordSuccess(const LeaderboardRecord& record) override
         {
-            Call(FN_Test);
+            Call(FN_OnWriteTournamentRecordSuccess, record);
+        }
+        void OnWriteTournamentRecordFailed(const Error& error) override
+        {
+            Call(FN_OnWriteTournamentRecordFailed, error);
+        }
+        void OnListTournamentsSuccess(const TournamentList& tournaments, AZ::u32 categoryStart, AZ::u32 categoryEnd, AZ::u32 startTime, AZ::u32 endTime, AZ::s32 limit, const AZStd::string& cursor) override
+        {
+            Call(FN_OnListTournamentsSuccess, tournaments, categoryStart, categoryEnd, startTime, endTime, limit, cursor);
+        }
+        void OnListTournamentsFailed(const Error& error) override
+        {
+            Call(FN_OnListTournamentsFailed, error);
+        }
+        void OnListTournamentRecordsSuccess(const TournamentRecordList& records, const AZStd::string& tournamentId, AZ::s32 limit, const AZStd::string& cursor, const AZStd::vector<AZStd::string>& ownerIds) override
+        {
+            Call(FN_OnListTournamentRecordsSuccess, records, tournamentId, limit, cursor, ownerIds);
+        }
+        void OnListTournamentRecordsFailed(const Error& error) override
+        {
+            Call(FN_OnListTournamentRecordsFailed, error);
+        }
+        void OnListTournamentRecordsAroundOwnerSuccess(const TournamentRecordList& records, const AZStd::string& tournamentId, const AZStd::string& ownerId, AZ::s32 limit) override
+        {
+            Call(FN_OnListTournamentRecordsAroundOwnerSuccess, records, tournamentId, ownerId, limit);
+        }
+        void OnListTournamentRecordsAroundOwnerFailed(const Error& error) override
+        {
+            Call(FN_OnListTournamentRecordsAroundOwnerFailed, error);
+        }
+        void OnJoinTournamentSuccess(const AZStd::string& tournamentId) override
+        {
+            Call(FN_OnJoinTournamentSuccess, tournamentId);
+        }
+        void OnJoinTournamentFailed(const Error& error) override
+        {
+            Call(FN_OnJoinTournamentFailed, error);
         }
     };
 
@@ -1769,7 +1814,17 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test() = 0;
+        virtual void OnRtClientNotConnected() = 0;
+        virtual void OnListMatchesSuccess(const MatchList& matchList, AZ::s32 min_size, AZ::s32 max_size, AZ::s32 limit, const AZStd::string& label, const AZStd::string& query, bool authoritative) = 0;
+        virtual void OnListMatchesFailed(const Error& error) = 0;
+        virtual void OnCreateMatchSuccess(const Match& match) = 0;
+        virtual void OnCreateMatchFailed(const RtError& error) = 0;
+        virtual void OnJoinMatchSuccess(const Match& match) = 0;
+        virtual void OnJoinMatchFailed(const RtError& error) = 0;
+        virtual void OnJoinMatchByTokenSuccess(const Match& match) = 0;
+        virtual void OnJoinMatchByTokenFailed(const RtError& error) = 0;
+        virtual void OnLeaveMatchSuccess(const AZStd::string& matchId) = 0;
+        virtual void OnLeaveMatchFailed(const RtError& error) = 0;
     };
     using NakamaMatchesNotificationBus = AZ::EBus<NakamaMatchesNotifications>;
     class NakamaMatchesNotificationHandler
@@ -1779,11 +1834,51 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaMatchesNotificationHandler,
             "{F57649CC-57F5-42C2-99B8-EA79F77D41D9}",
-            AZ::SystemAllocator, Test);
+            AZ::SystemAllocator, OnRtClientNotConnected, OnListMatchesSuccess, OnListMatchesFailed, OnCreateMatchSuccess, OnCreateMatchFailed, OnJoinMatchSuccess, OnJoinMatchFailed, OnJoinMatchByTokenSuccess, OnJoinMatchByTokenFailed, OnLeaveMatchSuccess, OnLeaveMatchFailed);
 
-        void Test() override
+		void OnRtClientNotConnected() override
+		{
+			Call(FN_OnRtClientNotConnected);
+		}
+        void OnListMatchesSuccess(const MatchList& matchList, AZ::s32 min_size, AZ::s32 max_size, AZ::s32 limit, const AZStd::string& label, const AZStd::string& query, bool authoritative) override
+		{
+			Call(FN_OnListMatchesSuccess, matchList, min_size, max_size, limit, label, query, authoritative);
+		}
+        void OnListMatchesFailed(const Error& error) override
         {
-            Call(FN_Test);
+			Call(FN_OnListMatchesFailed, error);
+        }
+        void OnCreateMatchSuccess(const Match& match) override
+        {
+			Call(FN_OnCreateMatchSuccess, match);
+        }
+        void OnCreateMatchFailed(const RtError& error) override
+        {
+			Call(FN_OnCreateMatchFailed, error);
+        }
+        void OnJoinMatchSuccess(const Match& match) override
+        {
+			Call(FN_OnJoinMatchSuccess, match);
+        }
+        void OnJoinMatchFailed(const RtError& error) override
+        {
+			Call(FN_OnJoinMatchFailed, error);
+        }
+        void OnJoinMatchByTokenSuccess(const Match& match) override
+		{
+			Call(FN_OnJoinMatchByTokenSuccess, match);
+		}
+        void OnJoinMatchByTokenFailed(const RtError& error) override
+        {
+			Call(FN_OnJoinMatchByTokenFailed, error);
+        }
+        void OnLeaveMatchSuccess(const AZStd::string& matchId) override
+        {
+			Call(FN_OnLeaveMatchSuccess, matchId);
+        }
+        void OnLeaveMatchFailed(const RtError& error) override
+        {
+            Call(FN_OnLeaveMatchFailed, error);
         }
     };
 
@@ -1795,7 +1890,10 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test() = 0;
+        virtual void OnListNotificationsSuccess(const NotificationList& notifications, AZ::s32 limit, const AZStd::string& cacheableCursor) = 0;
+        virtual void OnListNotificationsFailed(const Error& error) = 0;
+        virtual void OnDeleteNotificationsSuccess(const AZStd::vector<AZStd::string>& notificationIds) = 0;
+        virtual void OnDeleteNotificationsFailed(const Error& error) = 0;
     };
     using NakamaNotificationsNotificationBus = AZ::EBus<NakamaNotificationsNotifications>;
     class NakamaNotificationsNotificationHandler
@@ -1805,11 +1903,23 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaNotificationsNotificationHandler,
             "{6AB0487E-2AA6-4B8C-B198-3E2CE1F31331}",
-            AZ::SystemAllocator, Test);
+            AZ::SystemAllocator, OnListNotificationsSuccess, OnListNotificationsFailed, OnDeleteNotificationsSuccess, OnDeleteNotificationsFailed);
 
-        void Test() override
+        void OnListNotificationsSuccess(const NotificationList& notifications, AZ::s32 limit, const AZStd::string& cacheableCursor) override
         {
-            Call(FN_Test);
+            Call(FN_OnListNotificationsSuccess, notifications, limit, cacheableCursor);
+        }
+		void OnListNotificationsFailed(const Error& error) override
+		{
+			Call(FN_OnListNotificationsFailed, error);
+		}
+        void OnDeleteNotificationsSuccess(const AZStd::vector<AZStd::string>& notificationIds) override
+        {
+			Call(FN_OnDeleteNotificationsSuccess, notificationIds);
+        }
+        void OnDeleteNotificationsFailed(const Error& error) override
+        {
+			Call(FN_OnDeleteNotificationsFailed, error);
         }
     };
 
@@ -1821,7 +1931,18 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test() = 0;
+        virtual void OnListChannelMessagesSuccess(const ChannelMessageList& messageList) = 0;
+        virtual void OnListChannelMessagesFailed(const Error& error) = 0;
+        virtual void OnJoinChatSuccess(const Channel& channel) = 0;
+        virtual void OnJoinChatFailed(const RtError& error) = 0;
+        virtual void OnLeaveChatSuccess(const AZStd::string& channelId) = 0;
+        virtual void OnLeaveChatFailed(const RtError& error) = 0;
+        virtual void OnWriteChatMessageSuccess(const ChannelMessageAck& ack) = 0;
+        virtual void OnWriteChatMessageFailed(const RtError& error) = 0;
+        virtual void OnUpdateChatMessageSuccess(const ChannelMessageAck& ack) = 0;
+        virtual void OnUpdateChatMessageFailed(const RtError& error) = 0;
+        virtual void OnRemoveChatMessageSuccess(const ChannelMessageAck& ack) = 0;
+        virtual void OnRemoveChatMessageFailed(const RtError& error) = 0;
     };
     using NakamaChatNotificationBus = AZ::EBus<NakamaChatNotifications>;
     class NakamaChatNotificationHandler
@@ -1831,12 +1952,56 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaChatNotificationHandler,
             "{E1BCB48C-463C-4B06-AC84-9F73F3E842D0}",
-            AZ::SystemAllocator, Test);
+            AZ::SystemAllocator, OnListChannelMessagesSuccess, OnListChannelMessagesFailed, OnJoinChatSuccess, OnJoinChatFailed, OnLeaveChatSuccess, OnLeaveChatFailed, OnWriteChatMessageSuccess, OnWriteChatMessageFailed, OnUpdateChatMessageSuccess, OnUpdateChatMessageFailed, OnRemoveChatMessageSuccess, OnRemoveChatMessageFailed);
 
-        void Test() override
+        void OnListChannelMessagesSuccess(const ChannelMessageList& messageList) override
         {
-            Call(FN_Test);
+            Call(FN_OnListChannelMessagesSuccess, messageList);
         }
+		void OnListChannelMessagesFailed(const Error& error) override
+		{
+			Call(FN_OnListChannelMessagesFailed, error);
+		}
+		void OnJoinChatSuccess(const Channel& channel) override
+		{
+			Call(FN_OnJoinChatSuccess, channel);
+		}
+		void OnJoinChatFailed(const RtError& error) override
+		{
+			Call(FN_OnJoinChatFailed, error);
+		}
+		void OnLeaveChatSuccess(const AZStd::string& channelId) override
+		{
+			Call(FN_OnLeaveChatSuccess, channelId);
+		}
+		void OnLeaveChatFailed(const RtError& error) override
+		{
+			Call(FN_OnLeaveChatFailed, error);
+		}
+		void OnWriteChatMessageSuccess(const ChannelMessageAck& ack) override
+		{
+			Call(FN_OnWriteChatMessageSuccess, ack);
+		}
+		void OnWriteChatMessageFailed(const RtError& error) override
+		{
+			Call(FN_OnWriteChatMessageFailed, error);
+		}
+		void OnUpdateChatMessageSuccess(const ChannelMessageAck& ack) override
+		{
+			Call(FN_OnUpdateChatMessageSuccess, ack);
+		}
+		void OnUpdateChatMessageFailed(const RtError& error) override
+		{
+			Call(FN_OnUpdateChatMessageFailed, error);
+		}
+		void OnRemoveChatMessageSuccess(const ChannelMessageAck& ack) override
+		{
+			Call(FN_OnRemoveChatMessageSuccess, ack);
+		}
+		void OnRemoveChatMessageFailed(const RtError& error) override
+		{
+			Call(FN_OnRemoveChatMessageFailed, error);
+		}
     };
 
     class NakamaStorageObjectsNotifications
@@ -1847,7 +2012,16 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test() = 0;
+        virtual void OnListStorageObjectsSuccess(const StorageObjectList& objectList) = 0;
+        virtual void OnListStorageObjectsFailed(const Error& error) = 0;
+        virtual void OnListUsersStorageObjectsSuccess(const StorageObjectList& objectList) = 0;
+        virtual void OnListUsersStorageObjectsFailed(const Error& error) = 0;
+        virtual void OnWriteStorageObjectsSuccess(const AZStd::vector<StorageObjectAck>& objectAcks) = 0;
+        virtual void OnWriteStorageObjectsFailed(const Error& error) = 0;
+        virtual void OnReadStorageObjectsSuccess(const AZStd::vector<StorageObject>& objects) = 0;
+        virtual void OnReadStorageObjectsFailed(const Error& error) = 0;
+        virtual void OnDeleteStorageObjectsSuccess(const AZStd::vector<DeleteStorageObjectId>& objectIds) = 0;
+        virtual void OnDeleteStorageObjectsFailed(const Error& error) = 0;
     };
     using NakamaStorageObjectsNotificationBus = AZ::EBus<NakamaStorageObjectsNotifications>;
     class NakamaStorageObjectsNotificationHandler
@@ -1857,11 +2031,47 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaStorageObjectsNotificationHandler,
             "{4035B7AE-E793-4016-9805-B6D3F621611E}",
-            AZ::SystemAllocator, Test);
+            AZ::SystemAllocator, OnListStorageObjectsSuccess, OnListStorageObjectsFailed, OnListUsersStorageObjectsSuccess, OnListUsersStorageObjectsFailed, OnWriteStorageObjectsSuccess, OnWriteStorageObjectsFailed, OnReadStorageObjectsSuccess, OnReadStorageObjectsFailed, OnDeleteStorageObjectsSuccess, OnDeleteStorageObjectsFailed);
 
-        void Test() override
+        void OnListStorageObjectsSuccess(const StorageObjectList& objectList) override
         {
-            Call(FN_Test);
+			Call(FN_OnListStorageObjectsSuccess, objectList);
+        }
+        void OnListStorageObjectsFailed(const Error& error) override
+        {
+			Call(FN_OnListStorageObjectsFailed, error);
+        }
+        void OnListUsersStorageObjectsSuccess(const StorageObjectList& objectList) override
+        {
+			Call(FN_OnListUsersStorageObjectsSuccess, objectList);
+        }
+        void OnListUsersStorageObjectsFailed(const Error& error) override
+        {
+			Call(FN_OnListUsersStorageObjectsFailed, error);
+        }
+        void OnWriteStorageObjectsSuccess(const AZStd::vector<StorageObjectAck>& objectAcks) override
+        {
+			Call(FN_OnWriteStorageObjectsSuccess, objectAcks);
+        }
+        void OnWriteStorageObjectsFailed(const Error& error) override
+        {
+			Call(FN_OnWriteStorageObjectsFailed, error);
+        }
+        void OnReadStorageObjectsSuccess(const AZStd::vector<StorageObject>& objects) override
+        {
+			Call(FN_OnReadStorageObjectsSuccess, objects);
+        }
+        void OnReadStorageObjectsFailed(const Error& error) override
+        {
+			Call(FN_OnReadStorageObjectsFailed, error);
+        }
+        void OnDeleteStorageObjectsSuccess(const AZStd::vector<DeleteStorageObjectId>& objectIds) override
+        {
+			Call(FN_OnDeleteStorageObjectsSuccess, objectIds);
+        }
+        void OnDeleteStorageObjectsFailed(const Error& error) override
+        {
+			Call(FN_OnDeleteStorageObjectsFailed, error);
         }
     };
 
@@ -1873,7 +2083,12 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test() = 0;
+        virtual void OnRpcSuccess(const Rpc& rpc) = 0;
+        virtual void OnRpcFailed(const Error& error) = 0;
+        virtual void OnRpcWithIdSuccess(const Rpc& rpc) = 0;
+        virtual void OnRpcWithIdFailed(const Error& error) = 0;
+        virtual void OnRtRpcSuccess(const Rpc& rpc) = 0;
+        virtual void OnRtRpcFailed(const RtError& error) = 0;
     };
     using NakamaRpcNotificationBus = AZ::EBus<NakamaRpcNotifications>;
     class NakamaRpcNotificationHandler
@@ -1883,11 +2098,31 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaRpcNotificationHandler,
             "{F00F49BE-52BA-489A-9D34-8AB3586C8A89}",
-            AZ::SystemAllocator, Test);
+            AZ::SystemAllocator, OnRpcSuccess, OnRpcFailed, OnRpcWithIdSuccess, OnRpcWithIdFailed, OnRtRpcSuccess, OnRtRpcFailed);
 
-        void Test() override
+        void OnRpcSuccess(const Rpc& rpc) override
         {
-            Call(FN_Test);
+            Call(FN_OnRpcSuccess, rpc);
+        }
+        void OnRpcFailed(const Error& error) override
+        {
+			Call(FN_OnRpcFailed, error);
+        }
+        void OnRpcWithIdSuccess(const Rpc& rpc) override
+        {
+            Call(FN_OnRpcWithIdSuccess, rpc);
+        }
+        void OnRpcWithIdFailed(const Error& error) override
+        {
+            Call(FN_OnRpcWithIdFailed, error);
+        }
+		void OnRtRpcSuccess(const Rpc& rpc) override
+		{
+			Call(FN_OnRtRpcSuccess, rpc);
+		}
+        void OnRtRpcFailed(const RtError& error) override
+        {
+            Call(FN_OnRtRpcFailed, error);
         }
     };
 
@@ -1899,7 +2134,10 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test() = 0;
+        virtual void OnAddMatchmakerSuccess(const AZStd::string& ticket) = 0;
+        virtual void OnAddMatchmakerFailed(const RtError& error) = 0;
+        virtual void OnRemoveMatchmakerSuccess(const AZStd::string& ticket) = 0;
+        virtual void OnRemoveMatchmakerFailed(const RtError& error) = 0;
     };
     using NakamaMatchmakerNotificationBus = AZ::EBus<NakamaMatchmakerNotifications>;
     class NakamaMatchmakerNotificationHandler
@@ -1909,11 +2147,23 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaMatchmakerNotificationHandler,
             "{A43A3233-E5E5-4DAB-AC07-AD8C3E7D268A}",
-            AZ::SystemAllocator, Test);
+            AZ::SystemAllocator, OnAddMatchmakerSuccess, OnAddMatchmakerFailed, OnRemoveMatchmakerSuccess, OnRemoveMatchmakerFailed);
 
-        void Test() override
+        void OnAddMatchmakerSuccess(const AZStd::string& ticket) override
         {
-            Call(FN_Test);
+			Call(FN_OnAddMatchmakerSuccess, ticket);
+        }
+        void OnAddMatchmakerFailed(const RtError& error) override
+        {
+			Call(FN_OnAddMatchmakerFailed, error);
+        }
+        void OnRemoveMatchmakerSuccess(const AZStd::string& ticket) override
+        {
+			Call(FN_OnRemoveMatchmakerSuccess, ticket);
+        }
+        void OnRemoveMatchmakerFailed(const RtError& error) override
+        {
+			Call(FN_OnRemoveMatchmakerFailed, error);
         }
     };
 
@@ -1925,7 +2175,32 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test() = 0;
+        virtual void OnFollowUsersSuccess(const AZStd::vector<UserPresence>& presences) = 0;
+        virtual void OnFollowUsersFailed(const RtError& error) = 0;
+        virtual void OnUnfollowUsersSuccess(const AZStd::vector<AZStd::string>& userIds) = 0;
+        virtual void OnUnfollowUsersFailed(const RtError& error) = 0;
+        virtual void OnUpdateStatusSuccess(const AZStd::string& status) = 0;
+        virtual void OnUpdateStatusFailed(const RtError& error) = 0;
+        virtual void OnAcceptPartyMemberSuccess(const AZStd::string& partyId, const UserPresence& presence) = 0;
+        virtual void OnAcceptPartyMemberFailed(const RtError& error) = 0;
+        virtual void OnAddMatchmakerPartySuccess(const PartyMatchmakerTicket& ticket) = 0;
+        virtual void OnAddMatchmakerPartyFailed(const RtError& error) = 0;
+        virtual void OnClosePartySuccess(const AZStd::string& partyId) = 0;
+        virtual void OnClosePartyFailed(const RtError& error) = 0;
+        virtual void OnCreatePartySuccess(const Party& party) = 0;
+        virtual void OnCreatePartyFailed(const RtError& error) = 0;
+        virtual void OnJoinPartySuccess(const AZStd::string& partyId) = 0;
+        virtual void OnJoinPartyFailed(const RtError& error) = 0;
+        virtual void OnLeavePartySuccess(const AZStd::string& partyId) = 0;
+        virtual void OnLeavePartyFailed(const RtError& error) = 0;
+        virtual void OnListPartyJoinRequestsSuccess(const PartyJoinRequest& request) = 0;
+        virtual void OnListPartyJoinRequestsFailed(const RtError& error) = 0;
+        virtual void OnPromotePartyMemberSuccess(const AZStd::string& partyId, const UserPresence& partyMember) = 0;
+        virtual void OnPromotePartyMemberFailed(const RtError& error) = 0;
+        virtual void OnRemoveMatchmakerPartySuccess(const AZStd::string& partyId, const AZStd::string& ticket) = 0;
+        virtual void OnRemoveMatchmakerPartyFailed(const RtError& error) = 0;
+        virtual void OnRemovePartyMemberSuccess(const AZStd::string& partyId, const UserPresence& partyMember) = 0;
+        virtual void OnRemovePartyMemberFailed(const RtError& error) = 0;
     };
     using NakamaPartyNotificationBus = AZ::EBus<NakamaPartyNotifications>;
     class NakamaPartyNotificationHandler
@@ -1935,11 +2210,111 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaPartyNotificationHandler,
             "{2E8ACED1-A2A2-4DC2-92A0-5AE1DCD72C05}",
-            AZ::SystemAllocator, Test);
+            AZ::SystemAllocator, OnFollowUsersSuccess, OnFollowUsersFailed, OnUnfollowUsersSuccess, OnUnfollowUsersFailed, OnUpdateStatusSuccess, OnUpdateStatusFailed, OnAcceptPartyMemberSuccess, OnAcceptPartyMemberFailed, OnAddMatchmakerPartySuccess, OnAddMatchmakerPartyFailed, OnClosePartySuccess, OnClosePartyFailed, OnCreatePartySuccess, OnCreatePartyFailed, OnJoinPartySuccess, OnJoinPartyFailed, OnLeavePartySuccess, OnLeavePartyFailed, OnListPartyJoinRequestsSuccess, OnListPartyJoinRequestsFailed, OnPromotePartyMemberSuccess, OnPromotePartyMemberFailed, OnRemoveMatchmakerPartySuccess, OnRemoveMatchmakerPartyFailed, OnRemovePartyMemberSuccess, OnRemovePartyMemberFailed);
 
-        void Test() override
+        void OnFollowUsersSuccess(const AZStd::vector<UserPresence>& presences) override
         {
-            Call(FN_Test);
+            Call(FN_OnFollowUsersSuccess, presences);
         }
+        void OnFollowUsersFailed(const RtError& error) override
+        {
+            Call(FN_OnFollowUsersFailed, error);
+        }
+		void OnUnfollowUsersSuccess(const AZStd::vector<AZStd::string>& userIds) override
+		{
+			Call(FN_OnUnfollowUsersSuccess, userIds);
+		}
+		void OnUnfollowUsersFailed(const RtError& error) override
+		{
+			Call(FN_OnUnfollowUsersFailed, error);
+		}
+		void OnUpdateStatusSuccess(const AZStd::string& status) override
+		{
+			Call(FN_OnUpdateStatusSuccess, status);
+		}
+		void OnUpdateStatusFailed(const RtError& error) override
+		{
+			Call(FN_OnUpdateStatusFailed, error);
+		}
+		void OnAcceptPartyMemberSuccess(const AZStd::string& partyId, const UserPresence& presence) override
+		{
+			Call(FN_OnAcceptPartyMemberSuccess, partyId, presence);
+		}
+		void OnAcceptPartyMemberFailed(const RtError& error) override
+		{
+			Call(FN_OnAcceptPartyMemberFailed, error);
+		}
+		void OnAddMatchmakerPartySuccess(const PartyMatchmakerTicket& ticket) override
+		{
+			Call(FN_OnAddMatchmakerPartySuccess, ticket);
+		}
+		void OnAddMatchmakerPartyFailed(const RtError& error) override
+		{
+			Call(FN_OnAddMatchmakerPartyFailed, error);
+		}
+		void OnClosePartySuccess(const AZStd::string& partyId) override
+		{
+			Call(FN_OnClosePartySuccess, partyId);
+		}
+		void OnClosePartyFailed(const RtError& error) override
+		{
+			Call(FN_OnClosePartyFailed, error);
+		}
+		void OnCreatePartySuccess(const Party& party) override
+		{
+			Call(FN_OnCreatePartySuccess, party);
+		}
+		void OnCreatePartyFailed(const RtError& error) override
+		{
+			Call(FN_OnCreatePartyFailed, error);
+		}
+		void OnJoinPartySuccess(const AZStd::string& partyId) override
+		{
+			Call(FN_OnJoinPartySuccess, partyId);
+		}
+		void OnJoinPartyFailed(const RtError& error) override
+		{
+			Call(FN_OnJoinPartyFailed, error);
+		}
+		void OnLeavePartySuccess(const AZStd::string& partyId) override
+		{
+			Call(FN_OnLeavePartySuccess, partyId);
+		}   
+		void OnLeavePartyFailed(const RtError& error) override
+		{
+			Call(FN_OnLeavePartyFailed, error);
+		}
+		void OnListPartyJoinRequestsSuccess(const PartyJoinRequest& request) override
+		{
+			Call(FN_OnListPartyJoinRequestsSuccess, request);
+		}
+		void OnListPartyJoinRequestsFailed(const RtError& error) override
+		{
+			Call(FN_OnListPartyJoinRequestsFailed, error);
+		}
+		void OnPromotePartyMemberSuccess(const AZStd::string& partyId, const UserPresence& partyMember) override
+		{
+			Call(FN_OnPromotePartyMemberSuccess, partyId, partyMember);
+		}
+		void OnPromotePartyMemberFailed(const RtError& error) override
+		{
+			Call(FN_OnPromotePartyMemberFailed, error);
+		}
+		void OnRemoveMatchmakerPartySuccess(const AZStd::string& partyId, const AZStd::string& ticket) override
+		{
+			Call(FN_OnRemoveMatchmakerPartySuccess, partyId, ticket);
+		}
+		void OnRemoveMatchmakerPartyFailed(const RtError& error) override
+		{
+			Call(FN_OnRemoveMatchmakerPartyFailed, error);
+		}
+		void OnRemovePartyMemberSuccess(const AZStd::string& partyId, const UserPresence& partyMember) override
+		{
+			Call(FN_OnRemovePartyMemberSuccess, partyId, partyMember);
+		}
+		void OnRemovePartyMemberFailed(const RtError& error) override
+		{
+			Call(FN_OnRemovePartyMemberFailed, error);
+		}
     };
 } // namespace NakamaClientGem

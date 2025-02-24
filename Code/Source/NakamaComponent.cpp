@@ -1499,133 +1499,522 @@ namespace NakamaClientGem
     }
     void NakamaComponent::writeTournamentRecord(const AZStd::string& tournamentId, AZ::s64 score, AZ::s64 subscore, AZStd::string metadata)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->writeTournamentRecord(
+            m_Session,
+            tournamentId.c_str(),
+            score,
+            subscore,
+            metadata.c_str(),
+            [this](Nakama::NLeaderboardRecord record)
+            {
+                OnWriteTournamentRecordSuccess(LeaderboardRecord::FromNakama(record));
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnWriteTournamentRecordFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::listTournaments(AZ::u32 categoryStart, AZ::u32 categoryEnd, AZ::u32 startTime, AZ::u32 endTime, AZ::s32 limit, const AZStd::string& cursor)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listTournaments(
+            m_Session,
+            categoryStart,
+            categoryEnd,
+            startTime,
+            endTime,
+            limit,
+            cursor.c_str(),
+            [this, categoryStart, categoryEnd, startTime, endTime, limit, cursor](Nakama::NTournamentListPtr nTournamentList)
+            {
+                TournamentList tournamentList = TournamentList::FromNakama(*nTournamentList);
+                OnListTournamentsSuccess(tournamentList, categoryStart, categoryEnd, startTime, endTime, limit, cursor);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListTournamentsFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::listTournamentRecords(const AZStd::string& tournamentId, AZ::s32 limit, const AZStd::string& cursor, const AZStd::vector<AZStd::string>& ownerIds)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<std::string> n_ownerIds;
+        if (ownerIds.size() > 0)
+        {
+            for (const auto& ownerId : ownerIds)
+            {
+                n_ownerIds.push_back(ownerId.c_str());
+            }
+        }
+        m_Client->listTournamentRecords(
+            m_Session,
+            tournamentId.c_str(),
+            limit,
+            cursor.c_str(),
+            n_ownerIds,
+            [this, tournamentId, limit, cursor, ownerIds](Nakama::NTournamentRecordListPtr nTournamentRecordList)
+            {
+                TournamentRecordList tournamentRecordList = TournamentRecordList::FromNakama(*nTournamentRecordList);
+                OnListTournamentRecordsSuccess(tournamentRecordList, tournamentId, limit, cursor, ownerIds);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListTournamentRecordsFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::listTournamentRecordsAroundOwner(const AZStd::string& tournamentId, const AZStd::string& ownerId, AZ::s32 limit)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listTournamentRecordsAroundOwner(
+            m_Session,
+            tournamentId.c_str(),
+            ownerId.c_str(),
+            limit,
+            [this, tournamentId, ownerId, limit](Nakama::NTournamentRecordListPtr nTournamentRecordList)
+            {
+                TournamentRecordList tournamentRecordList = TournamentRecordList::FromNakama(*nTournamentRecordList);
+                OnListTournamentRecordsAroundOwnerSuccess(tournamentRecordList, tournamentId, ownerId, limit);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListTournamentRecordsAroundOwnerFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::joinTournament(const AZStd::string& tournamentId)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->joinTournament(
+            m_Session,
+            tournamentId.c_str(),
+            [this, tournamentId]()
+            {
+                OnJoinTournamentSuccess(tournamentId);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnJoinTournamentFailed(Error::FromNakama(nError));
+            }
+        );
     }
+
     void NakamaComponent::listMatches(AZ::s32 min_size, AZ::s32 max_size, AZ::s32 limit, const AZStd::string& label, const AZStd::string& query, bool authoritative)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listMatches(
+            m_Session,
+            min_size,
+            max_size,
+            limit,
+            label.c_str(),
+            query.c_str(),
+            authoritative,
+            [this, min_size, max_size, limit, label, query, authoritative](Nakama::NMatchListPtr nMatchList)
+            {
+                MatchList matchList = MatchList::FromNakama(*nMatchList);
+                OnListMatchesSuccess(matchList, min_size, max_size, limit, label, query, authoritative);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListMatchesFailed(Error::FromNakama(nError));
+            }
+        );
     }
-    void NakamaComponent::listNotifications(AZ::s32 limit, const AZStd::string& cacheableCursor)
-    {
-    }
-    void NakamaComponent::deleteNotifications(const AZStd::vector<AZStd::string>& notificationIds)
-    {
-    }
-    void NakamaComponent::listChannelMessages(const AZStd::string& channelId, AZ::s32 limit, const AZStd::string& cursor, bool forward)
-    {
-    }
-    void NakamaComponent::listStorageObjects(const AZStd::string& collection, AZ::s32 limit, const AZStd::string& cursor)
-    {
-    }
-    void NakamaComponent::listUsersStorageObjects(const AZStd::string& collection, const AZStd::string& userId, AZ::s32 limit, const AZStd::string& cursor)
-    {
-    }
-    void NakamaComponent::writeStorageObjects(const AZStd::vector<StorageObjectWrite>& objects)
-    {
-    }
-    void NakamaComponent::readStorageObjects(const AZStd::vector<ReadStorageObjectId>& objectIds)
-    {
-    }
-    void NakamaComponent::deleteStorageObjects(const AZStd::vector<DeleteStorageObjectId>& objectIds)
-    {
-    }
-    void NakamaComponent::rpc(const AZStd::string& id, const AZStd::string& payload)
-    {
-    }
-    void NakamaComponent::rpcWithId(const AZStd::string& http_key, const AZStd::string& id, const AZStd::string& payload)
-    {
-    }
-    void NakamaComponent::joinChat(const AZStd::string& target, AZ::u8 channelType, bool persistence, bool hidden)
-    {
-    }
-    void NakamaComponent::leaveChat(const AZStd::string& channelId)
-    {
-    }
-    void NakamaComponent::writeChatMessage(const AZStd::string& channelId, const AZStd::string& content)
-    {
-    }
-    void NakamaComponent::updateChatMessage(const AZStd::string& channelId, const AZStd::string& messageId, const AZStd::string& content)
-    {
-    }
-    void NakamaComponent::removeChatMessage(const AZStd::string& channelId, const AZStd::string& messageId)
-    {
-    }
+
     void NakamaComponent::createMatch()
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->createMatch(
+            [this](const Nakama::NMatch& nMatch)
+            {
+                Match match = Match::FromNakama(nMatch);
+                OnCreateMatchSuccess(match);
+            },
+            [this](const Nakama::NRtError& nError)
+            {
+                OnCreateMatchFailed(RtError::FromNakama(nError));
+            }
+        );
     }
+
     void NakamaComponent::joinMatch(const AZStd::string& matchId, const AZStringMap& metadata)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+
+        m_RtClient->joinMatch(
+            matchId.c_str(),
+            AZStringMapToNakama(metadata),
+            [this](const Nakama::NMatch& nMatch)
+            {
+                Match match = Match::FromNakama(nMatch);
+                OnJoinMatchSuccess(match);
+            },
+            [this](const Nakama::NRtError& nError)
+            {
+                OnJoinMatchFailed(RtError::FromNakama(nError));
+            }
+        );
     }
+
     void NakamaComponent::joinMatchByToken(const AZStd::string& token)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->joinMatchByToken(
+            token.c_str(),
+            [this](const Nakama::NMatch& nMatch)
+            {
+                OnJoinMatchByTokenSuccess(Match::FromNakama(nMatch));
+            },
+            [this](const Nakama::NRtError& nError)
+            {
+                OnJoinMatchByTokenFailed(RtError::FromNakama(nError));
+            }
+        );
     }
+
     void NakamaComponent::leaveMatch(const AZStd::string& matchId)
     {
+		if (!m_Session)
+		{
+			OnUnauthenticated();
+			return;
+		}
+		if (!m_RtClient->isConnected())
+		{
+			OnRtClientNotConnected();
+			return;
+		}
+		m_RtClient->leaveMatch(
+			matchId.c_str(),
+			[this, matchId]()
+			{
+				OnLeaveMatchSuccess(matchId);
+			},
+			[this](const Nakama::NRtError& nError)
+			{
+				OnLeaveMatchFailed(RtError::FromNakama(nError));
+			}
+		);
     }
-    void NakamaComponent::addMatchmaker(AZ::s32 minCount, AZ::s32 maxCount, const AZStd::string& query, const AZStringMap& stringProperties, const AZStringDoubleMap& numericProperties, AZ::s32 countMultiple)
-    {
-    }
-    void NakamaComponent::removeMatchmaker(const AZStd::string& ticket)
-    {
-    }
+
     void NakamaComponent::sendMatchData(const AZStd::string& matchId, AZ::s64 opCode, const AZStd::string& data, const AZStd::vector<UserPresence>& presences)
     {
+		if (!m_Session)
+		{
+			OnUnauthenticated();
+			return;
+		}
+		if (!m_RtClient->isConnected())
+		{
+			OnRtClientNotConnected();
+			return;
+		}
+		std::vector<Nakama::NUserPresence> nPresences;
+		for (const auto& presence : presences)
+		{
+			nPresences.push_back(UserPresence::ToNakama(presence));
+		}
+		m_RtClient->sendMatchData(
+			matchId.c_str(),
+			opCode,
+			data.c_str(),
+			nPresences
+		);
     }
-    void NakamaComponent::followUsers(const AZStd::vector<AZStd::string>& userIds)
+
+    void NakamaComponent::listNotifications(AZ::s32 limit, const AZStd::string& cacheableCursor)
     {
+		if (!m_Session)
+		{
+			OnUnauthenticated();
+			return;
+		}
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+		m_Client->listNotifications(
+			m_Session,
+			limit,
+			cacheableCursor.c_str(),
+			[this, limit, cacheableCursor](Nakama::NNotificationListPtr nNotificationList)
+			{
+				NotificationList notificationList = NotificationList::FromNakama(*nNotificationList);
+				OnListNotificationsSuccess(notificationList, limit, cacheableCursor);
+			},
+			[this](const Nakama::NError& nError)
+			{
+				OnListNotificationsFailed(Error::FromNakama(nError));
+			}
+		);
     }
-    void NakamaComponent::unfollowUsers(const AZStd::vector<AZStd::string>& userIds)
+
+    void NakamaComponent::deleteNotifications(const AZStd::vector<AZStd::string>& notificationIds)
     {
+        if (!m_Session)
+        {
+			OnUnauthenticated();
+			return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+		std::vector<std::string> n_notificationIds;
+		if (notificationIds.size() > 0)
+		{
+			for (auto& notificationId : notificationIds)
+			{
+				n_notificationIds.push_back(notificationId.c_str());
+			}
+		}
+        m_Client->deleteNotifications(
+            m_Session,
+            n_notificationIds,
+            [this, notificationIds]()
+            {
+                OnDeleteNotificationsSuccess(notificationIds);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnDeleteNotificationsFailed(Error::FromNakama(nError));
+            }
+        );
     }
-    void NakamaComponent::updateStatus(const AZStd::string& status)
+
+    void NakamaComponent::listChannelMessages(const AZStd::string& channelId, AZ::s32 limit, const AZStd::string& cursor, bool forward)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listChannelMessages(
+            m_Session,
+            channelId.c_str(),
+            limit,
+            cursor.c_str(),
+            forward,
+            [this](Nakama::NChannelMessageListPtr messageList)
+            {
+                OnListChannelMessagesSuccess(ChannelMessageList::FromNakama(*messageList));
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListChannelMessagesFailed(Error::FromNakama(nError));
+            }
+        );
     }
-    void NakamaComponent::rtRpc(const AZStd::string& id, const AZStd::string& payload)
+
+    void NakamaComponent::joinChat(const AZStd::string& target, AZ::u8 channelType, bool persistence, bool hidden)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->joinChat(
+            target.c_str(),
+            static_cast<Nakama::NChannelType>(channelType),
+            persistence,
+            hidden,
+            [this](Nakama::NChannelPtr nChannel)
+            {
+                OnJoinChatSuccess(Channel::FromNakama(*nChannel));
+            },
+            [this](const Nakama::NRtError& nError)
+            {
+                OnJoinChatFailed(RtError::FromNakama(nError));
+            }
+        );
     }
-    void NakamaComponent::acceptPartyMember(const AZStd::string& partyId, UserPresence& presence)
+
+    void NakamaComponent::leaveChat(const AZStd::string& channelId)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->leaveChat(
+            channelId.c_str(),
+            [this, channelId]()
+            {
+                OnLeaveChatSuccess(channelId);
+            },
+            [this](const Nakama::NRtError& nError)
+            {
+                OnLeaveChatFailed(RtError::FromNakama(nError));
+            }
+        );
     }
-    void NakamaComponent::addMatchmakerParty(const AZStd::string& partyId, const AZStd::string& query, AZ::s32 minCount, AZ::s32 maxCount, const AZStringMap& stringProperties, const AZStringDoubleMap& numericProperties, AZ::s32 countMultiple)
+
+    void NakamaComponent::writeChatMessage(const AZStd::string& channelId, const AZStd::string& content)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->writeChatMessage(
+            channelId.c_str(),
+            content.c_str(),
+            [this](const Nakama::NChannelMessageAck& nAck)
+            {
+                OnWriteChatMessageSuccess(ChannelMessageAck::FromNakama(nAck));
+            },
+            [this](const Nakama::NRtError& nError)
+            {
+                OnWriteChatMessageFailed(RtError::FromNakama(nError));
+            }
+        );
     }
-    void NakamaComponent::closeParty(const AZStd::string& partyId)
+
+    void NakamaComponent::updateChatMessage(const AZStd::string& channelId, const AZStd::string& messageId, const AZStd::string& content)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->updateChatMessage(
+            channelId.c_str(),
+            messageId.c_str(),
+            content.c_str(),
+            [this](const Nakama::NChannelMessageAck& nAck)
+            {
+                OnUpdateChatMessageSuccess(ChannelMessageAck::FromNakama(nAck));
+            },
+            [this](const Nakama::NRtError& nError)
+            {
+                OnUpdateChatMessageFailed(RtError::FromNakama(nError));
+            }
+        );
     }
-    void NakamaComponent::createParty(bool open, AZ::s32 maxSize)
+
+    void NakamaComponent::removeChatMessage(const AZStd::string& channelId, const AZStd::string& messageId)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->removeChatMessage(
+            channelId.c_str(),
+            messageId.c_str(),
+            [this](const Nakama::NChannelMessageAck& nAck)
+            {
+                OnRemoveChatMessageSuccess(ChannelMessageAck::FromNakama(nAck));
+            },
+            [this](const Nakama::NRtError& nError)
+            {
+                OnRemoveChatMessageFailed(RtError::FromNakama(nError));
+            }
+        );
     }
-    void NakamaComponent::joinParty(const AZStd::string& partyId)
-    {
-    }
-    void NakamaComponent::leaveParty(const AZStd::string& partyId)
-    {
-    }
-    void NakamaComponent::listPartyJoinRequests(const AZStd::string& partyId)
-    {
-    }
-    void NakamaComponent::promotePartyMember(const AZStd::string& partyId, UserPresence& partyMember)
-    {
-    }
-    void NakamaComponent::removeMatchmakerParty(const AZStd::string& partyId, const AZStd::string& ticket)
-    {
-    }
-    void NakamaComponent::removePartyMember(const AZStd::string& partyId, UserPresence& presence)
-    {
-    }
+
     void NakamaComponent::sendPartyData(const AZStd::string& partyId, AZ::s32 opCode, AZStd::string& data)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        Nakama::NBytes nData = data.c_str();
+        m_RtClient->sendPartyData(
+            partyId.c_str(),
+            opCode,
+            nData
+        );
     }
+
     void NakamaComponent::OnConnect()
     {
         NakamaListenerNotificationBus::Broadcast(
@@ -2180,6 +2569,1222 @@ namespace NakamaClientGem
         NakamaLeaderboardsNotificationBus::Broadcast(
             &NakamaLeaderboardsNotificationBus::Events::OnDeleteLeaderboardRecordFailed,
             error
+        );
+    }
+    void NakamaComponent::OnWriteTournamentRecordSuccess(const LeaderboardRecord& record)
+    {
+        NakamaTournamentsNotificationBus::Broadcast(
+            &NakamaTournamentsNotificationBus::Events::OnWriteTournamentRecordSuccess,
+            record
+        );
+    }
+    void NakamaComponent::OnWriteTournamentRecordFailed(const Error& error)
+    {
+        NakamaTournamentsNotificationBus::Broadcast(
+            &NakamaTournamentsNotificationBus::Events::OnWriteTournamentRecordFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnListTournamentsSuccess(const TournamentList& tournaments, AZ::u32 categoryStart, AZ::u32 categoryEnd, AZ::u32 startTime, AZ::u32 endTime, AZ::s32 limit, const AZStd::string& cursor)
+    {
+        NakamaTournamentsNotificationBus::Broadcast(
+            &NakamaTournamentsNotificationBus::Events::OnListTournamentsSuccess,
+            tournaments,
+            categoryStart,
+            categoryEnd,
+            startTime,
+            endTime,
+            limit,
+            cursor
+        );
+    }
+    void NakamaComponent::OnListTournamentsFailed(const Error& error)
+    {
+        NakamaTournamentsNotificationBus::Broadcast(
+            &NakamaTournamentsNotificationBus::Events::OnListTournamentsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnListTournamentRecordsSuccess(const TournamentRecordList& records, const AZStd::string& tournamentId, AZ::s32 limit, const AZStd::string& cursor, const AZStd::vector<AZStd::string>& ownerIds)
+    {
+        NakamaTournamentsNotificationBus::Broadcast(
+            &NakamaTournamentsNotificationBus::Events::OnListTournamentRecordsSuccess,
+            records,
+            tournamentId,
+            limit,
+            cursor,
+            ownerIds
+        );
+    }
+    void NakamaComponent::OnListTournamentRecordsFailed(const Error& error)
+    {
+        NakamaTournamentsNotificationBus::Broadcast(
+            &NakamaTournamentsNotificationBus::Events::OnListTournamentRecordsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnListTournamentRecordsAroundOwnerSuccess(const TournamentRecordList& records, const AZStd::string& tournamentId, const AZStd::string& ownerId, AZ::s32 limit)
+    {
+        NakamaTournamentsNotificationBus::Broadcast(
+            &NakamaTournamentsNotificationBus::Events::OnListTournamentRecordsAroundOwnerSuccess,
+            records,
+            tournamentId,
+            ownerId,
+            limit
+        );
+    }
+    void NakamaComponent::OnListTournamentRecordsAroundOwnerFailed(const Error& error)
+    {
+        NakamaTournamentsNotificationBus::Broadcast(
+            &NakamaTournamentsNotificationBus::Events::OnListTournamentRecordsAroundOwnerFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnJoinTournamentSuccess(const AZStd::string& tournamentId)
+    {
+        NakamaTournamentsNotificationBus::Broadcast(
+            &NakamaTournamentsNotificationBus::Events::OnJoinTournamentSuccess,
+            tournamentId
+        );
+    }
+    void NakamaComponent::OnJoinTournamentFailed(const Error& error)
+    {
+        NakamaTournamentsNotificationBus::Broadcast(
+            &NakamaTournamentsNotificationBus::Events::OnJoinTournamentFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnRtClientNotConnected()
+    {
+		NakamaMatchesNotificationBus::Broadcast(
+			&NakamaMatchesNotificationBus::Events::OnRtClientNotConnected
+		);
+    }
+    void NakamaComponent::OnListMatchesSuccess(const MatchList& matchList, AZ::s32 min_size, AZ::s32 max_size, AZ::s32 limit, const AZStd::string& label, const AZStd::string& query, bool authoritative)
+    {
+        NakamaMatchesNotificationBus::Broadcast(
+            &NakamaMatchesNotificationBus::Events::OnListMatchesSuccess,
+            matchList,
+            min_size,
+            max_size,
+            limit,
+            label,
+            query,
+            authoritative
+        );
+    }
+    void NakamaComponent::OnListMatchesFailed(const Error& error)
+    {
+		NakamaMatchesNotificationBus::Broadcast(
+			&NakamaMatchesNotificationBus::Events::OnListMatchesFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnCreateMatchSuccess(const Match& match)
+    {
+        NakamaMatchesNotificationBus::Broadcast(
+            &NakamaMatchesNotificationBus::Events::OnCreateMatchSuccess,
+            match
+        );
+    }
+    void NakamaComponent::OnCreateMatchFailed(const RtError& error)
+    {
+        NakamaMatchesNotificationBus::Broadcast(
+			&NakamaMatchesNotificationBus::Events::OnCreateMatchFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnJoinMatchSuccess(const Match& match)
+    {
+		NakamaMatchesNotificationBus::Broadcast(
+			&NakamaMatchesNotificationBus::Events::OnJoinMatchSuccess,
+			match
+		);
+    }
+    void NakamaComponent::OnJoinMatchFailed(const RtError& error)
+    {
+        NakamaMatchesNotificationBus::Broadcast(
+            &NakamaMatchesNotificationBus::Events::OnJoinMatchFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnJoinMatchByTokenSuccess(const Match& match)
+    {
+		NakamaMatchesNotificationBus::Broadcast(
+			&NakamaMatchesNotificationBus::Events::OnJoinMatchByTokenSuccess,
+			match
+		);
+    }
+    void NakamaComponent::OnJoinMatchByTokenFailed(const RtError& error)
+    {
+		NakamaMatchesNotificationBus::Broadcast(
+			&NakamaMatchesNotificationBus::Events::OnJoinMatchByTokenFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnLeaveMatchSuccess(const AZStd::string& matchId)
+    {
+        NakamaMatchesNotificationBus::Broadcast(
+            &NakamaMatchesNotificationBus::Events::OnLeaveMatchSuccess,
+            matchId
+        );
+    }
+    void NakamaComponent::OnLeaveMatchFailed(const RtError& error)
+    {
+		NakamaMatchesNotificationBus::Broadcast(
+			&NakamaMatchesNotificationBus::Events::OnLeaveMatchFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnListNotificationsSuccess(const NotificationList& notifications, AZ::s32 limit, const AZStd::string& cacheableCursor)
+    {
+        NakamaNotificationsNotificationBus::Broadcast(
+			&NakamaNotificationsNotificationBus::Events::OnListNotificationsSuccess,
+            notifications,
+            limit,
+            cacheableCursor
+        );
+    }
+    void NakamaComponent::OnListNotificationsFailed(const Error& error)
+    {
+        NakamaNotificationsNotificationBus::Broadcast(
+            &NakamaNotificationsNotificationBus::Events::OnListNotificationsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnDeleteNotificationsSuccess(const AZStd::vector<AZStd::string>& notificationIds)
+    {
+		NakamaNotificationsNotificationBus::Broadcast(
+			&NakamaNotificationsNotificationBus::Events::OnDeleteNotificationsSuccess,
+			notificationIds
+		);
+    }
+    void NakamaComponent::OnDeleteNotificationsFailed(const Error& error)
+    {
+        NakamaNotificationsNotificationBus::Broadcast(
+            &NakamaNotificationsNotificationBus::Events::OnDeleteNotificationsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnRpcSuccess(const Rpc& rpc)
+    {
+        NakamaRpcNotificationBus::Broadcast(
+            &NakamaRpcNotificationBus::Events::OnRpcSuccess,
+            rpc
+        );
+    }
+    void NakamaComponent::OnRpcFailed(const Error& error)
+    {
+		NakamaRpcNotificationBus::Broadcast(
+			&NakamaRpcNotificationBus::Events::OnRpcFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnRpcWithIdSuccess(const Rpc& rpc)
+    {
+		NakamaRpcNotificationBus::Broadcast(
+			&NakamaRpcNotificationBus::Events::OnRpcWithIdSuccess,
+			rpc
+		);
+    }
+    void NakamaComponent::OnRpcWithIdFailed(const Error& error)
+    {
+        NakamaRpcNotificationBus::Broadcast(
+            &NakamaRpcNotificationBus::Events::OnRpcWithIdFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnRtRpcSuccess(const Rpc& rpc)
+    {
+        NakamaRpcNotificationBus::Broadcast(
+            &NakamaRpcNotificationBus::Events::OnRtRpcSuccess,
+            rpc
+        );
+    }
+    void NakamaComponent::OnRtRpcFailed(const RtError& error)
+    {
+		NakamaRpcNotificationBus::Broadcast(
+			&NakamaRpcNotificationBus::Events::OnRtRpcFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnAddMatchmakerSuccess(const AZStd::string& ticket)
+    {
+        NakamaMatchmakerNotificationBus::Broadcast(
+            &NakamaMatchmakerNotificationBus::Events::OnAddMatchmakerSuccess,
+            ticket
+        );
+    }
+    void NakamaComponent::OnAddMatchmakerFailed(const RtError& error)
+    {
+		NakamaMatchmakerNotificationBus::Broadcast(
+			&NakamaMatchmakerNotificationBus::Events::OnAddMatchmakerFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnRemoveMatchmakerSuccess(const AZStd::string& ticket)
+    {
+		NakamaMatchmakerNotificationBus::Broadcast(
+			&NakamaMatchmakerNotificationBus::Events::OnRemoveMatchmakerSuccess,
+			ticket
+		);
+    }
+    void NakamaComponent::OnRemoveMatchmakerFailed(const RtError& error)
+    {
+        NakamaMatchmakerNotificationBus::Broadcast(
+            &NakamaMatchmakerNotificationBus::Events::OnRemoveMatchmakerFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnFollowUsersSuccess(const AZStd::vector<UserPresence>& presences)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnFollowUsersSuccess,
+            presences
+        );
+    }
+    void NakamaComponent::OnFollowUsersFailed(const RtError& error)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnFollowUsersFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnUnfollowUsersSuccess(const AZStd::vector<AZStd::string>& userIds)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnUnfollowUsersSuccess,
+			userIds
+		);
+    }
+    void NakamaComponent::OnUnfollowUsersFailed(const RtError& error)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnUnfollowUsersFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnUpdateStatusSuccess(const AZStd::string& status)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnUpdateStatusSuccess,
+			status
+		);
+    }
+    void NakamaComponent::OnUpdateStatusFailed(const RtError& error)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnUpdateStatusFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnAcceptPartyMemberSuccess(const AZStd::string& partyId, const UserPresence& presence)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnAcceptPartyMemberSuccess,
+            partyId,
+            presence
+        );
+    }
+    void NakamaComponent::OnAcceptPartyMemberFailed(const RtError& error)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnAcceptPartyMemberFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnAddMatchmakerPartySuccess(const PartyMatchmakerTicket& ticket)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnAddMatchmakerPartySuccess,
+			ticket
+		);
+    }
+    void NakamaComponent::OnAddMatchmakerPartyFailed(const RtError& error)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnAddMatchmakerPartyFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnClosePartySuccess(const AZStd::string& partyId)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnClosePartySuccess,
+            partyId
+        );
+    }
+    void NakamaComponent::OnClosePartyFailed(const RtError& error)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnClosePartyFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnCreatePartySuccess(const Party& party)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnCreatePartySuccess,
+			party
+		);
+    }
+    void NakamaComponent::OnCreatePartyFailed(const RtError& error)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnCreatePartyFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnJoinPartySuccess(const AZStd::string& partyId)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnJoinPartySuccess,
+			partyId
+		);
+    }
+    void NakamaComponent::OnJoinPartyFailed(const RtError& error)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnJoinPartyFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnLeavePartySuccess(const AZStd::string& partyId)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnLeavePartySuccess,
+            partyId
+        );
+    }
+    void NakamaComponent::OnLeavePartyFailed(const RtError& error)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnLeavePartyFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnListPartyJoinRequestsSuccess(const PartyJoinRequest& request)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnListPartyJoinRequestsSuccess,
+			request
+		);
+    }
+    void NakamaComponent::OnListPartyJoinRequestsFailed(const RtError& error)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnListPartyJoinRequestsFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnPromotePartyMemberSuccess(const AZStd::string& partyId, const UserPresence& partyMember)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnPromotePartyMemberSuccess,
+            partyId,
+            partyMember
+        );
+    }
+    void NakamaComponent::OnPromotePartyMemberFailed(const RtError& error)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnPromotePartyMemberFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnRemoveMatchmakerPartySuccess(const AZStd::string& partyId, const AZStd::string& ticket)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnRemoveMatchmakerPartySuccess,
+			partyId,
+			ticket
+		);
+    }
+    void NakamaComponent::OnRemoveMatchmakerPartyFailed(const RtError& error)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnRemoveMatchmakerPartyFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnRemovePartyMemberSuccess(const AZStd::string& partyId, const UserPresence& partyMember)
+    {
+		NakamaPartyNotificationBus::Broadcast(
+			&NakamaPartyNotificationBus::Events::OnRemovePartyMemberSuccess,
+			partyId,
+			partyMember
+		);
+    }
+    void NakamaComponent::OnRemovePartyMemberFailed(const RtError& error)
+    {
+        NakamaPartyNotificationBus::Broadcast(
+            &NakamaPartyNotificationBus::Events::OnRemovePartyMemberFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnListStorageObjectsSuccess(const StorageObjectList& objectList)
+    {
+        NakamaStorageObjectsNotificationBus::Broadcast(
+			&NakamaStorageObjectsNotificationBus::Events::OnListStorageObjectsSuccess,
+			objectList
+		);
+    }
+    void NakamaComponent::OnListStorageObjectsFailed(const Error& error)
+    {
+		NakamaStorageObjectsNotificationBus::Broadcast(
+			&NakamaStorageObjectsNotificationBus::Events::OnListStorageObjectsFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnListUsersStorageObjectsSuccess(const StorageObjectList& objectList)
+    {
+        NakamaStorageObjectsNotificationBus::Broadcast(
+            &NakamaStorageObjectsNotificationBus::Events::OnListUsersStorageObjectsSuccess,
+            objectList
+        );
+    }
+    void NakamaComponent::OnListUsersStorageObjectsFailed(const Error& error)
+    {
+		NakamaStorageObjectsNotificationBus::Broadcast(
+			&NakamaStorageObjectsNotificationBus::Events::OnListUsersStorageObjectsFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnWriteStorageObjectsSuccess(const AZStd::vector<StorageObjectAck>& objectAcks)
+    {
+        NakamaStorageObjectsNotificationBus::Broadcast(
+            &NakamaStorageObjectsNotificationBus::Events::OnWriteStorageObjectsSuccess,
+            objectAcks
+        );
+    }
+    void NakamaComponent::OnWriteStorageObjectsFailed(const Error& error)
+    {
+        NakamaStorageObjectsNotificationBus::Broadcast(
+            &NakamaStorageObjectsNotificationBus::Events::OnWriteStorageObjectsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnReadStorageObjectsSuccess(const AZStd::vector<StorageObject>& objects)
+    {
+		NakamaStorageObjectsNotificationBus::Broadcast(
+			&NakamaStorageObjectsNotificationBus::Events::OnReadStorageObjectsSuccess,
+			objects
+		);
+    }
+    void NakamaComponent::OnReadStorageObjectsFailed(const Error& error)
+    {
+		NakamaStorageObjectsNotificationBus::Broadcast(
+			&NakamaStorageObjectsNotificationBus::Events::OnReadStorageObjectsFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnDeleteStorageObjectsSuccess(const AZStd::vector<DeleteStorageObjectId>& objectIds)
+    {
+        NakamaStorageObjectsNotificationBus::Broadcast(
+            &NakamaStorageObjectsNotificationBus::Events::OnDeleteStorageObjectsSuccess,
+            objectIds
+        );
+    }
+    void NakamaComponent::OnDeleteStorageObjectsFailed(const Error& error)
+    {
+		NakamaStorageObjectsNotificationBus::Broadcast(
+			&NakamaStorageObjectsNotificationBus::Events::OnDeleteStorageObjectsFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnListChannelMessagesSuccess(const ChannelMessageList& messageList)
+    {
+        NakamaChatNotificationBus::Broadcast(
+            &NakamaChatNotificationBus::Events::OnListChannelMessagesSuccess,
+            messageList
+        );
+    }
+    void NakamaComponent::OnListChannelMessagesFailed(const Error& error)
+    {
+		NakamaChatNotificationBus::Broadcast(
+			&NakamaChatNotificationBus::Events::OnListChannelMessagesFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnJoinChatSuccess(const Channel& channel)
+    {
+		NakamaChatNotificationBus::Broadcast(
+			&NakamaChatNotificationBus::Events::OnJoinChatSuccess,
+			channel
+		);
+    }
+    void NakamaComponent::OnJoinChatFailed(const RtError& error)
+    {
+        NakamaChatNotificationBus::Broadcast(
+            &NakamaChatNotificationBus::Events::OnJoinChatFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnLeaveChatSuccess(const AZStd::string& channelId)
+    {
+		NakamaChatNotificationBus::Broadcast(
+			&NakamaChatNotificationBus::Events::OnLeaveChatSuccess,
+			channelId
+		);
+    }
+    void NakamaComponent::OnLeaveChatFailed(const RtError& error)
+    {
+		NakamaChatNotificationBus::Broadcast(
+			&NakamaChatNotificationBus::Events::OnLeaveChatFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnWriteChatMessageSuccess(const ChannelMessageAck& ack)
+    {
+        NakamaChatNotificationBus::Broadcast(
+            &NakamaChatNotificationBus::Events::OnWriteChatMessageSuccess,
+            ack
+        );
+    }
+    void NakamaComponent::OnWriteChatMessageFailed(const RtError& error)
+    {
+        NakamaChatNotificationBus::Broadcast(
+            &NakamaChatNotificationBus::Events::OnWriteChatMessageFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnUpdateChatMessageSuccess(const ChannelMessageAck& ack)
+    {
+		NakamaChatNotificationBus::Broadcast(
+			&NakamaChatNotificationBus::Events::OnUpdateChatMessageSuccess,
+			ack
+		);
+    }
+    void NakamaComponent::OnUpdateChatMessageFailed(const RtError& error)
+    {
+		NakamaChatNotificationBus::Broadcast(
+			&NakamaChatNotificationBus::Events::OnUpdateChatMessageFailed,
+			error
+		);
+    }
+    void NakamaComponent::OnRemoveChatMessageSuccess(const ChannelMessageAck& ack)
+    {
+        NakamaChatNotificationBus::Broadcast(
+            &NakamaChatNotificationBus::Events::OnRemoveChatMessageSuccess,
+            ack
+        );
+    }
+    void NakamaComponent::OnRemoveChatMessageFailed(const RtError& error)
+    {
+        NakamaChatNotificationBus::Broadcast(
+            &NakamaChatNotificationBus::Events::OnRemoveChatMessageFailed,
+            error
+        );
+    }
+    void NakamaComponent::rpc(const AZStd::string& id, const AZStd::string& payload)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        Nakama::opt::optional<std::string> n_payload = Nakama::opt::nullopt;
+		if (!payload.empty())
+		{
+			n_payload = payload.c_str();
+		}
+        m_Client->rpc(
+            m_Session,
+            id.c_str(),
+            n_payload,
+            [this](const Nakama::NRpc& nRpc) {
+                OnRpcSuccess(Rpc::FromNakama(nRpc));
+            },
+			[this](const Nakama::NError& nError) {
+                OnRpcFailed(Error::FromNakama(nError));
+			}
+       );
+    }
+    void NakamaComponent::rpcWithId(const AZStd::string& http_key, const AZStd::string& id, const AZStd::string& payload)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        Nakama::opt::optional<std::string> n_payload = Nakama::opt::nullopt;
+        if (!payload.empty())
+        {
+            n_payload = payload.c_str();
+        }
+        m_Client->rpc(
+            http_key.c_str(),
+            id.c_str(),
+            n_payload,
+            [this](const Nakama::NRpc& nRpc) {
+                OnRpcWithIdSuccess(Rpc::FromNakama(nRpc));
+            },
+            [this](const Nakama::NError& nError) {
+                OnRpcWithIdFailed(Error::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::rtRpc(const AZStd::string& id, const AZStd::string& payload)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        Nakama::opt::optional<std::string> n_payload = Nakama::opt::nullopt;
+        if (!payload.empty())
+        {
+            n_payload = payload.c_str();
+        }
+        m_RtClient->rpc(
+            id.c_str(),
+            n_payload,
+			[this](const Nakama::NRpc& nRpc) {
+				OnRtRpcSuccess(Rpc::FromNakama(nRpc));
+			},
+            [this](const Nakama::NRtError& nError) {
+                OnRtRpcFailed(RtError::FromNakama(nError));
+            }
+            );
+    }
+    void NakamaComponent::addMatchmaker(AZ::s32 minCount, AZ::s32 maxCount, const AZStd::string& query, const AZStringMap& stringProperties, const AZStringDoubleMap& numericProperties, AZ::s32 countMultiple)
+    {
+		if (!m_Session)
+		{
+			OnUnauthenticated();
+			return;
+		}
+		if (!m_RtClient->isConnected())
+		{
+			OnRtClientNotConnected();
+			return;
+		}
+        Nakama::opt::optional<int32_t> n_minCount = Nakama::opt::nullopt;
+		if (minCount > 0)
+		{
+			n_minCount = minCount;
+		}
+        Nakama::opt::optional<int32_t> n_maxCount = Nakama::opt::nullopt;
+        if (maxCount > 0)
+        {
+            n_maxCount = maxCount;
+        }
+        Nakama::opt::optional<std::string> n_query = Nakama::opt::nullopt;
+		if (!query.empty())
+		{
+			n_query = query.c_str();
+		}
+        Nakama::NStringMap n_stringProperties = AZStringMapToNakama(stringProperties);
+		Nakama::NStringDoubleMap n_numericProperties = AZStringDoubleMapToNakama(numericProperties);
+        Nakama::opt::optional<int32_t> n_countMultiple = Nakama::opt::nullopt;
+        if (countMultiple > 0)
+        {
+            n_countMultiple = countMultiple;
+        }
+		m_RtClient->addMatchmaker(
+            n_minCount,
+            n_maxCount,
+            n_query,
+            n_stringProperties,
+            n_numericProperties,
+            n_countMultiple,
+			[this](const Nakama::NMatchmakerTicket& nTicket) {
+				OnAddMatchmakerSuccess(nTicket.ticket.c_str());
+			},
+			[this](const Nakama::NRtError& nError) {
+				OnAddMatchmakerFailed(RtError::FromNakama(nError));
+			}
+		);
+    }
+    void NakamaComponent::removeMatchmaker(const AZStd::string& ticket)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->removeMatchmaker(
+            ticket.c_str(),
+            [this, ticket]() {
+                OnRemoveMatchmakerSuccess(ticket);
+            },
+            [this](const Nakama::NRtError& nError) {
+                OnRemoveMatchmakerFailed(RtError::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::followUsers(const AZStd::vector<AZStd::string>& userIds)
+    {
+		if (!m_Session)
+		{
+			OnUnauthenticated();
+			return;
+		}
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        std::vector<std::string> n_userIds;
+        if (userIds.size() > 0)
+        {
+            for (auto userId : userIds)
+            {
+                n_userIds.push_back(userId.c_str());
+            }
+        }
+		m_RtClient->followUsers(
+            n_userIds,
+			[this](const Nakama::NStatus& nStatus) {
+                AZStd::vector<UserPresence> presences;
+                if (nStatus.presences.size() > 0)
+                {
+                    for (auto presence : nStatus.presences)
+                    {
+                        presences.push_back(UserPresence::FromNakama(presence));
+                    }
+                }
+				OnFollowUsersSuccess(presences);
+			},
+			[this](const Nakama::NRtError& nError) {
+				OnFollowUsersFailed(RtError::FromNakama(nError));
+			}
+		);
+    }
+    void NakamaComponent::unfollowUsers(const AZStd::vector<AZStd::string>& userIds)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        std::vector<std::string> n_userIds;
+        if (userIds.size() > 0)
+        {
+            for (auto userId : userIds)
+            {
+                n_userIds.push_back(userId.c_str());
+            }
+        }
+        m_RtClient->unfollowUsers(
+            n_userIds,
+            [this, userIds]() {
+                OnUnfollowUsersSuccess(userIds);
+            },
+            [this](const Nakama::NRtError& nError) {
+                OnUnfollowUsersFailed(RtError::FromNakama(nError));
+            }
+        );
+
+    }
+    void NakamaComponent::updateStatus(const AZStd::string& status)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->updateStatus(
+            status.c_str(),
+            [this, status]() {
+                OnUpdateStatusSuccess(status);
+            },
+            [this](const Nakama::NRtError& nError) {
+                OnUpdateStatusFailed(RtError::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::acceptPartyMember(const AZStd::string& partyId, const UserPresence& presence)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        Nakama::NUserPresence nUserPresence = UserPresence::ToNakama(presence);
+		m_RtClient->acceptPartyMember(
+			partyId.c_str(),
+            nUserPresence,
+			[this, partyId, presence]() {
+				OnAcceptPartyMemberSuccess(partyId, presence);
+			},
+			[this](const Nakama::NRtError& nError) {
+				OnAcceptPartyMemberFailed(RtError::FromNakama(nError));
+			}
+		);
+    }
+    void NakamaComponent::addMatchmakerParty(const AZStd::string& partyId, const AZStd::string& query, AZ::s32 minCount, AZ::s32 maxCount, const AZStringMap& stringProperties, const AZStringDoubleMap& numericProperties, AZ::s32 countMultiple)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        Nakama::NStringMap n_stringProperties = AZStringMapToNakama(stringProperties);
+        Nakama::NStringDoubleMap n_numericProperties = AZStringDoubleMapToNakama(numericProperties);
+        m_RtClient->addMatchmakerParty(
+            partyId.c_str(),
+            query.c_str(),
+            minCount,
+            maxCount,
+            n_stringProperties,
+            n_numericProperties,
+            countMultiple,
+            [this](const Nakama::NPartyMatchmakerTicket& nTicket) {
+                OnAddMatchmakerPartySuccess(PartyMatchmakerTicket::FromNakama(nTicket));
+            },
+            [this](const Nakama::NRtError& nError) {
+                OnAddMatchmakerPartyFailed(RtError::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::closeParty(const AZStd::string& partyId)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->closeParty(
+            partyId.c_str(),
+            [this, partyId]() {
+                OnClosePartySuccess(partyId);
+            },
+            [this](const Nakama::NRtError& nError) {
+                OnClosePartyFailed(RtError::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::createParty(bool open, AZ::s32 maxSize)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+		m_RtClient->createParty(
+			open,
+			maxSize,
+			[this](const Nakama::NParty& nParty) {
+				OnCreatePartySuccess(Party::FromNakama(nParty));
+			},
+			[this](const Nakama::NRtError& nError) {
+				OnCreatePartyFailed(RtError::FromNakama(nError));
+			}
+		);
+    }
+    void NakamaComponent::joinParty(const AZStd::string& partyId)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+		m_RtClient->joinParty(
+			partyId.c_str(),
+			[this, partyId]() {
+				OnJoinPartySuccess(partyId);
+			},
+			[this](const Nakama::NRtError& nError) {
+				OnJoinPartyFailed(RtError::FromNakama(nError));
+			}
+		);
+    }
+    void NakamaComponent::leaveParty(const AZStd::string& partyId)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->leaveParty(
+            partyId.c_str(),
+            [this, partyId]() {
+                OnLeavePartySuccess(partyId);
+            },
+            [this](const Nakama::NRtError& nError) {
+                OnLeavePartyFailed(RtError::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::listPartyJoinRequests(const AZStd::string& partyId)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        m_RtClient->listPartyJoinRequests(
+            partyId.c_str(),
+            [this](const Nakama::NPartyJoinRequest& joinRequest) {
+                OnListPartyJoinRequestsSuccess(PartyJoinRequest::FromNakama(joinRequest));
+            },
+            [this](const Nakama::NRtError& nError) {
+                OnListPartyJoinRequestsFailed(RtError::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::promotePartyMember(const AZStd::string& partyId, const UserPresence& partyMember)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        Nakama::NUserPresence nPartyMember = UserPresence::ToNakama(partyMember);
+        m_RtClient->promotePartyMember(
+            partyId.c_str(),
+            nPartyMember,
+            [this, partyId, partyMember]() {
+                OnPromotePartyMemberSuccess(partyId, partyMember);
+            },
+            [this](const Nakama::NRtError& nError) {
+                OnPromotePartyMemberFailed(RtError::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::removeMatchmakerParty(const AZStd::string& partyId, const AZStd::string& ticket)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+		m_RtClient->removeMatchmakerParty(
+			partyId.c_str(),
+			ticket.c_str(),
+			[this, partyId, ticket]() {
+				OnRemoveMatchmakerPartySuccess(partyId, ticket);
+			},
+			[this](const Nakama::NRtError& nError) {
+				OnRemoveMatchmakerPartyFailed(RtError::FromNakama(nError));
+			}
+		);
+    }
+    void NakamaComponent::removePartyMember(const AZStd::string& partyId, const UserPresence& partyMember)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        if (!m_RtClient->isConnected())
+        {
+            OnRtClientNotConnected();
+            return;
+        }
+        Nakama::NUserPresence nPartyMember = UserPresence::ToNakama(partyMember);
+        m_RtClient->removePartyMember(
+            partyId.c_str(),
+            nPartyMember,
+            [this, partyId, partyMember]() {
+				OnRemovePartyMemberSuccess(partyId, partyMember);
+            },
+			[this](const Nakama::NRtError& nError) {
+				OnRemovePartyMemberFailed(RtError::FromNakama(nError));
+			}
+        );
+    }
+    void NakamaComponent::listStorageObjects(const AZStd::string& collection, AZ::s32 limit, const AZStd::string& cursor)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listStorageObjects(
+            m_Session,
+            collection.c_str(),
+            limit,
+            cursor.c_str(),
+            [this](Nakama::NStorageObjectListPtr objectList) {
+                OnListStorageObjectsSuccess(StorageObjectList::FromNakama(*objectList));
+            },
+            [this](const Nakama::NError& nError) {
+                OnListStorageObjectsFailed(Error::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::listUsersStorageObjects(const AZStd::string& collection, const AZStd::string& userId, AZ::s32 limit, const AZStd::string& cursor)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listUsersStorageObjects(
+            m_Session,
+            collection.c_str(),
+            userId.c_str(),
+            limit,
+            cursor.c_str(),
+            [this](Nakama::NStorageObjectListPtr objectList) {
+                OnListUsersStorageObjectsSuccess(StorageObjectList::FromNakama(*objectList));
+            },
+            [this](const Nakama::NError& nError) {
+                OnListUsersStorageObjectsFailed(Error::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::writeStorageObjects(const AZStd::vector<StorageObjectWrite>& objects)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<Nakama::NStorageObjectWrite> n_objects;
+        if (objects.size() > 0)
+        {
+            for (auto objectWrite : objects)
+            {
+				n_objects.push_back(StorageObjectWrite::ToNakama(objectWrite));
+            }
+        }
+        m_Client->writeStorageObjects(
+            m_Session,
+            n_objects,
+            [this](const Nakama::NStorageObjectAcks& nAcks)
+            {
+                AZStd::vector<StorageObjectAck> acks;
+                if (nAcks.size() > 0)
+                {
+                    for (auto ack : nAcks)
+                    {
+                        acks.push_back(StorageObjectAck::FromNakama(ack));
+                    }
+                }
+                OnWriteStorageObjectsSuccess(acks);
+            },
+            [this](const Nakama::NError& nError) {
+                OnWriteStorageObjectsFailed(Error::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::readStorageObjects(const AZStd::vector<ReadStorageObjectId>& objectIds)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+		std::vector<Nakama::NReadStorageObjectId> n_objectIds;
+        if (objectIds.size() > 0)
+        {
+            for (auto objectId : objectIds)
+            {
+                n_objectIds.push_back(ReadStorageObjectId::ToNakama(objectId));
+            }
+        }
+        m_Client->readStorageObjects(
+            m_Session,
+            n_objectIds,
+            [this](const Nakama::NStorageObjects& nObjects)
+            {
+                AZStd::vector<StorageObject> objects;
+                if (nObjects.size() > 0)
+                {
+                    for (auto storageObject : nObjects)
+                    {
+						objects.push_back(StorageObject::FromNakama(storageObject));
+                    }
+                }
+                OnReadStorageObjectsSuccess(objects);
+            },
+            [this](const Nakama::NError& nError) {
+                OnReadStorageObjectsFailed(Error::FromNakama(nError));
+            }
+        );
+    }
+    void NakamaComponent::deleteStorageObjects(const AZStd::vector<DeleteStorageObjectId>& objectIds)
+    {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<Nakama::NDeleteStorageObjectId> n_objectIds;
+        if (objectIds.size() > 0)
+        {
+            for (auto objectId : objectIds)
+            {
+                n_objectIds.push_back(DeleteStorageObjectId::ToNakama(objectId));
+            }
+        }
+        m_Client->deleteStorageObjects(
+            m_Session,
+            n_objectIds,
+            [this, objectIds]() {
+                OnDeleteStorageObjectsSuccess(objectIds);
+            },
+            [this](const Nakama::NError& nError) {
+                OnDeleteStorageObjectsFailed(Error::FromNakama(nError));
+            }
         );
     }
 } // namespace NakamaClientGem

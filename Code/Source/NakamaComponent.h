@@ -1171,7 +1171,7 @@ namespace NakamaClientGem
          */
         virtual void acceptPartyMember(
             const AZStd::string& partyId,
-            UserPresence& presence
+            const UserPresence& presence
         ) override;
 
         /**
@@ -1243,7 +1243,7 @@ namespace NakamaClientGem
          */
         virtual void promotePartyMember(
             const AZStd::string& partyId,
-            UserPresence& partyMember
+            const UserPresence& partyMember
         ) override;
 
         /**
@@ -1263,7 +1263,7 @@ namespace NakamaClientGem
          */
         virtual void removePartyMember(
             const AZStd::string& partyId,
-            UserPresence& presence
+            const UserPresence& presence
         ) override;
 
         /**
@@ -1350,7 +1350,96 @@ namespace NakamaClientGem
         void OnDeleteLeaderboardRecordSuccess(const AZStd::string& leaderboardId);
         void OnDeleteLeaderboardRecordFailed(const Error& error);
 
+        void OnWriteTournamentRecordSuccess(const LeaderboardRecord& record);
+        void OnWriteTournamentRecordFailed(const Error& error);
+        void OnListTournamentsSuccess(const TournamentList& tournaments, AZ::u32 categoryStart, AZ::u32 categoryEnd, AZ::u32 startTime, AZ::u32 endTime, AZ::s32 limit, const AZStd::string& cursor);
+        void OnListTournamentsFailed(const Error& error);
+        void OnListTournamentRecordsSuccess(const TournamentRecordList& records, const AZStd::string& tournamentId, AZ::s32 limit, const AZStd::string& cursor, const AZStd::vector<AZStd::string>& ownerIds);
+        void OnListTournamentRecordsFailed(const Error& error);
+        void OnListTournamentRecordsAroundOwnerSuccess(const TournamentRecordList& records, const AZStd::string& tournamentId, const AZStd::string& ownerId, AZ::s32 limit);
+        void OnListTournamentRecordsAroundOwnerFailed(const Error& error);
+        void OnJoinTournamentSuccess(const AZStd::string& tournamentId);
+        void OnJoinTournamentFailed(const Error& error);
 
+        void OnRtClientNotConnected();
+        void OnListMatchesSuccess(const MatchList& matchList, AZ::s32 min_size, AZ::s32 max_size, AZ::s32 limit, const AZStd::string& label, const AZStd::string& query, bool authoritative);
+		void OnListMatchesFailed(const Error& error);
+		void OnCreateMatchSuccess(const Match& match);
+		void OnCreateMatchFailed(const RtError& error);
+		void OnJoinMatchSuccess(const Match& match);
+		void OnJoinMatchFailed(const RtError& error);
+		void OnJoinMatchByTokenSuccess(const Match& match);
+		void OnJoinMatchByTokenFailed(const RtError& error);
+        void OnLeaveMatchSuccess(const AZStd::string& matchId);
+		void OnLeaveMatchFailed(const RtError& error);
+
+		void OnListNotificationsSuccess(const NotificationList& notifications, AZ::s32 limit, const AZStd::string& cacheableCursor);
+		void OnListNotificationsFailed(const Error& error);
+		void OnDeleteNotificationsSuccess(const AZStd::vector<AZStd::string>& notificationIds);
+		void OnDeleteNotificationsFailed(const Error& error);
+
+        void OnRpcSuccess(const Rpc& rpc);
+		void OnRpcFailed(const Error& error);
+		void OnRpcWithIdSuccess(const Rpc& rpc);
+		void OnRpcWithIdFailed(const Error& error);
+		void OnRtRpcSuccess(const Rpc& rpc);
+		void OnRtRpcFailed(const RtError& error);
+
+        void OnAddMatchmakerSuccess(const AZStd::string& ticket);
+		void OnAddMatchmakerFailed(const RtError& error);
+		void OnRemoveMatchmakerSuccess(const AZStd::string& ticket);
+		void OnRemoveMatchmakerFailed(const RtError& error);
+
+        void OnFollowUsersSuccess(const AZStd::vector<UserPresence>& presences);
+        void OnFollowUsersFailed(const RtError& error);
+        void OnUnfollowUsersSuccess(const AZStd::vector<AZStd::string>& userIds);
+        void OnUnfollowUsersFailed(const RtError& error);
+        void OnUpdateStatusSuccess(const AZStd::string& status);
+		void OnUpdateStatusFailed(const RtError& error);
+        void OnAcceptPartyMemberSuccess(const AZStd::string& partyId, const UserPresence& presence);
+		void OnAcceptPartyMemberFailed(const RtError& error);
+        void OnAddMatchmakerPartySuccess(const PartyMatchmakerTicket& ticket);
+        void OnAddMatchmakerPartyFailed(const RtError& error);
+        void OnClosePartySuccess(const AZStd::string& partyId);
+		void OnClosePartyFailed(const RtError& error);
+		void OnCreatePartySuccess(const Party& party);
+		void OnCreatePartyFailed(const RtError& error);
+        void OnJoinPartySuccess(const AZStd::string& partyId);
+		void OnJoinPartyFailed(const RtError& error);
+        void OnLeavePartySuccess(const AZStd::string& partyId);
+        void OnLeavePartyFailed(const RtError& error);
+		void OnListPartyJoinRequestsSuccess(const PartyJoinRequest& request);
+		void OnListPartyJoinRequestsFailed(const RtError& error);
+        void OnPromotePartyMemberSuccess(const AZStd::string& partyId, const UserPresence& partyMember);
+		void OnPromotePartyMemberFailed(const RtError& error);
+        void OnRemoveMatchmakerPartySuccess(const AZStd::string& partyId, const AZStd::string& ticket);
+		void OnRemoveMatchmakerPartyFailed(const RtError& error);
+        void OnRemovePartyMemberSuccess(const AZStd::string& partyId, const UserPresence& partyMember);
+		void OnRemovePartyMemberFailed(const RtError& error);
+
+        void OnListStorageObjectsSuccess(const StorageObjectList& objectList);
+		void OnListStorageObjectsFailed(const Error& error);
+        void OnListUsersStorageObjectsSuccess(const StorageObjectList& objectList);
+        void OnListUsersStorageObjectsFailed(const Error& error);
+		void OnWriteStorageObjectsSuccess(const AZStd::vector<StorageObjectAck>& objectAcks);
+        void OnWriteStorageObjectsFailed(const Error& error);
+		void OnReadStorageObjectsSuccess(const AZStd::vector<StorageObject>& objects);
+		void OnReadStorageObjectsFailed(const Error& error);
+		void OnDeleteStorageObjectsSuccess(const AZStd::vector<DeleteStorageObjectId>& objectIds);
+		void OnDeleteStorageObjectsFailed(const Error& error);
+
+        void OnListChannelMessagesSuccess(const ChannelMessageList& messageList);
+        void OnListChannelMessagesFailed(const Error& error);
+		void OnJoinChatSuccess(const Channel& channel);
+        void OnJoinChatFailed(const RtError& error);
+        void OnLeaveChatSuccess(const AZStd::string& channelId);
+        void OnLeaveChatFailed(const RtError& error);
+        void OnWriteChatMessageSuccess(const ChannelMessageAck& ack);
+        void OnWriteChatMessageFailed(const RtError& error);
+        void OnUpdateChatMessageSuccess(const ChannelMessageAck& ack);
+        void OnUpdateChatMessageFailed(const RtError& error);
+        void OnRemoveChatMessageSuccess(const ChannelMessageAck& ack);
+        void OnRemoveChatMessageFailed(const RtError& error);
 
     protected:
         /*
