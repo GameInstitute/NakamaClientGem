@@ -1300,12 +1300,19 @@ namespace NakamaClientGem
 
         void OnGetAccountSuccess(const Account& account);
         void OnGetAccountFailed(const Error& error);
-
         void OnUpdateAccountSuccess(const AZStd::string& username, const AZStd::string& displayName, const AZStd::string& avatarUrl, const AZStd::string& langTag, const AZStd::string& location, const AZStd::string& timezone);
         void OnUpdateAccountFailed(const Error& error);
-
         void OnGetUsersSuccess(const AZStd::vector<User>& users);
         void OnGetUsersFailed(const Error& error);
+
+        void OnAddFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames);
+        void OnAddFriendsFailed(const Error& error);
+        void OnDeleteFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames);
+        void OnDeleteFriendsFailed(const Error& error);
+        void OnBlockFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames);
+        void OnBlockFriendsFailed(const Error& error);
+        void OnListFriendsSuccess(const AZStd::vector<Friend>& friends, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor);
+        void OnListFriendsFailed(const Error& error);
 
     protected:
         /*

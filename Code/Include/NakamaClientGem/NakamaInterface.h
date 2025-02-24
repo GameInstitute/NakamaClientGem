@@ -1468,7 +1468,14 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test() = 0;
+        virtual void OnAddFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames) = 0;
+        virtual void OnAddFriendsFailed(const Error& error) = 0;
+        virtual void OnDeleteFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames) = 0;
+        virtual void OnDeleteFriendsFailed(const Error& error) = 0;
+        virtual void OnBlockFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames) = 0;
+        virtual void OnBlockFriendsFailed(const Error& error) = 0;
+        virtual void OnListFriendsSuccess(const AZStd::vector<Friend>& friends, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor) = 0;
+        virtual void OnListFriendsFailed(const Error& error) = 0;
     };
     using NakamaFriendsNotificationBus = AZ::EBus<NakamaFriendsNotifications>;
     class NakamaFriendsNotificationHandler
@@ -1478,11 +1485,39 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaFriendsNotificationHandler,
             "{2DB70277-1C75-44FB-8BB6-2E5321E94A46}",
-            AZ::SystemAllocator, Test);
+            AZ::SystemAllocator, OnAddFriendsSuccess, OnAddFriendsFailed, OnDeleteFriendsSuccess, OnDeleteFriendsFailed, OnBlockFriendsSuccess, OnBlockFriendsFailed, OnListFriendsSuccess, OnListFriendsFailed);
 
-        void Test() override
+        void OnAddFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames) override
         {
-            Call(FN_Test);
+            Call(FN_OnAddFriendsSuccess, ids, usernames);
+        }
+        void OnAddFriendsFailed(const Error& error) override
+        {
+            Call(FN_OnAddFriendsFailed, error);
+        }
+        void OnDeleteFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames) override
+        {
+            Call(FN_OnDeleteFriendsSuccess, ids, usernames);
+        }
+        void OnDeleteFriendsFailed(const Error& error) override
+        {
+            Call(FN_OnDeleteFriendsFailed, error);
+        }
+        void OnBlockFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames) override
+        {
+            Call(FN_OnBlockFriendsSuccess, ids, usernames);
+        }
+        void OnBlockFriendsFailed(const Error& error) override
+        {
+            Call(FN_OnBlockFriendsFailed, error);
+        }
+        void OnListFriendsSuccess(const AZStd::vector<Friend>& friends, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor) override
+        {
+            Call(FN_OnListFriendsSuccess, friends, limit, state, cursor);
+        }
+        void OnListFriendsFailed(const Error& error) override
+        {
+            Call(FN_OnListFriendsFailed, error);
         }
     };
 

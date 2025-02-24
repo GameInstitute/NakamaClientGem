@@ -939,15 +939,144 @@ namespace NakamaClientGem
     }
     void NakamaComponent::addFriends(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<std::string> n_ids;
+        if (ids.size() > 0)
+        {
+            for (auto& id : ids)
+            {
+                n_ids.push_back(id.c_str());
+            }
+        }
+        std::vector<std::string> n_usernames;
+        if (usernames.size() > 0)
+        {
+            for (auto& username : usernames)
+            {
+                n_usernames.push_back(username.c_str());
+            }
+        }
+        m_Client->addFriends(
+            m_Session,
+            n_ids,
+            n_usernames,
+            [this, ids, usernames]()
+            {
+                OnAddFriendsSuccess(ids, usernames);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnAddFriendsFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::deleteFriends(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<std::string> n_ids;
+        if (ids.size() > 0)
+        {
+            for (auto& id : ids)
+            {
+                n_ids.push_back(id.c_str());
+            }
+        }
+        std::vector<std::string> n_usernames;
+        if (usernames.size() > 0)
+        {
+            for (auto& username : usernames)
+            {
+                n_usernames.push_back(username.c_str());
+            }
+        }
+        m_Client->deleteFriends(
+            m_Session,
+            n_ids,
+            n_usernames,
+            [this, ids, usernames]()
+            {
+                OnDeleteFriendsSuccess(ids, usernames);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnDeleteFriendsFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::blockFriends(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<std::string> n_ids;
+        if (ids.size() > 0)
+        {
+            for (auto& id : ids)
+            {
+                n_ids.push_back(id.c_str());
+            }
+        }
+        std::vector<std::string> n_usernames;
+        if (usernames.size() > 0)
+        {
+            for (auto& username : usernames)
+            {
+                n_usernames.push_back(username.c_str());
+            }
+        }
+        m_Client->blockFriends(
+            m_Session,
+            n_ids,
+            n_usernames,
+            [this, ids, usernames]()
+            {
+                OnBlockFriendsSuccess(ids, usernames);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnBlockFriendsFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::listFriends(AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listFriends(
+            m_Session,
+            limit,
+            static_cast<Nakama::NFriend::State>(state),
+            cursor.c_str(),
+            [this, limit, state, cursor](Nakama::NFriendListPtr nFriends)
+            {
+                AZStd::vector<Friend> friends;
+                if (nFriends->friends.size() > 0)
+                {
+                    for (auto& friend_ : nFriends->friends)
+                    {
+                        friends.push_back(Friend::FromNakama(friend_));
+                    }
+                }
+                OnListFriendsSuccess(friends, limit, state, cursor);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListFriendsFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::createGroup(const AZStd::string& name, const AZStd::string& description, const AZStd::string& avatarUrl, const AZStd::string& langTag, bool open, AZ::s32 maxCount)
     {
@@ -1348,6 +1477,68 @@ namespace NakamaClientGem
     {
         NakamaAccountNotificationBus::Broadcast(
             &NakamaAccountNotificationBus::Events::OnGetUsersFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnAddFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames)
+    {
+        NakamaFriendsNotificationBus::Broadcast(
+            &NakamaFriendsNotificationBus::Events::OnAddFriendsSuccess,
+            ids,
+            usernames
+        );
+    }
+    void NakamaComponent::OnAddFriendsFailed(const Error& error)
+    {
+        NakamaFriendsNotificationBus::Broadcast(
+            &NakamaFriendsNotificationBus::Events::OnAddFriendsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnDeleteFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames)
+    {
+        NakamaFriendsNotificationBus::Broadcast(
+            &NakamaFriendsNotificationBus::Events::OnDeleteFriendsSuccess,
+            ids,
+            usernames
+        );
+    }
+    void NakamaComponent::OnDeleteFriendsFailed(const Error& error)
+    {
+        NakamaFriendsNotificationBus::Broadcast(
+            &NakamaFriendsNotificationBus::Events::OnDeleteFriendsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnBlockFriendsSuccess(const AZStd::vector<AZStd::string>& ids, const AZStd::vector<AZStd::string>& usernames)
+    {
+        NakamaFriendsNotificationBus::Broadcast(
+            &NakamaFriendsNotificationBus::Events::OnBlockFriendsSuccess,
+            ids,
+            usernames
+        );
+    }
+    void NakamaComponent::OnBlockFriendsFailed(const Error& error)
+    {
+        NakamaFriendsNotificationBus::Broadcast(
+            &NakamaFriendsNotificationBus::Events::OnBlockFriendsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnListFriendsSuccess(const AZStd::vector<Friend>& friends, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor)
+    {
+        NakamaFriendsNotificationBus::Broadcast(
+            &NakamaFriendsNotificationBus::Events::OnListFriendsSuccess,
+            friends,
+            limit,
+            state,
+            cursor
+        );
+    }
+    void NakamaComponent::OnListFriendsFailed(const Error& error)
+    {
+        NakamaFriendsNotificationBus::Broadcast(
+            &NakamaFriendsNotificationBus::Events::OnListFriendsFailed,
             error
         );
     }
