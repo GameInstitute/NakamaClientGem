@@ -1080,42 +1080,323 @@ namespace NakamaClientGem
     }
     void NakamaComponent::createGroup(const AZStd::string& name, const AZStd::string& description, const AZStd::string& avatarUrl, const AZStd::string& langTag, bool open, AZ::s32 maxCount)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->createGroup(
+            m_Session,
+            name.c_str(),
+            description.c_str(),
+            avatarUrl.c_str(),
+            langTag.c_str(),
+            open,
+            maxCount,
+            [this](const Nakama::NGroup& nGroup)
+            {
+                OnCreateGroupSuccess(Group::FromNakama(nGroup));
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnCreateGroupFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::deleteGroup(const AZStd::string& groupId)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->deleteGroup(
+            m_Session,
+            groupId.c_str(),
+            [this, groupId]()
+            {
+                OnDeleteGroupSuccess(groupId);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnDeleteGroupFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::addGroupUsers(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<std::string> n_ids;
+        if (ids.size() > 0)
+        {
+            for (auto& id : ids)
+            {
+                n_ids.push_back(id.c_str());
+            }
+        }
+        m_Client->addGroupUsers(
+            m_Session,
+            groupId.c_str(),
+            n_ids,
+            [this, groupId, ids]()
+            {
+                OnAddGroupUsersSuccess(groupId, ids);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnAddGroupUsersFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::listGroupUsers(const AZStd::string& groupId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listGroupUsers(
+            m_Session,
+            groupId.c_str(),
+            limit,
+            static_cast<Nakama::NUserGroupState>(state),
+            cursor.c_str(),
+            [this, groupId, limit, state, cursor](Nakama::NGroupUserListPtr nGroupUsers)
+            {
+                GroupUserList userList = GroupUserList::FromNakama(*nGroupUsers);
+                OnListGroupUsersSuccess(userList, groupId,  limit, state, cursor);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListGroupUsersFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::kickGroupUsers(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<std::string> n_ids;
+        if (ids.size() > 0)
+        {
+            for (auto& id : ids)
+            {
+                n_ids.push_back(id.c_str());
+            }
+        }
+        m_Client->kickGroupUsers(
+            m_Session,
+            groupId.c_str(),
+            n_ids,
+            [this, groupId, ids]()
+            {
+                OnKickGroupUsersSuccess(groupId, ids);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnKickGroupUsersFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::joinGroup(const AZStd::string& groupId)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->joinGroup(
+            m_Session,
+            groupId.c_str(),
+            [this, groupId]()
+            {
+                OnJoinGroupSuccess(groupId);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnJoinGroupFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::leaveGroup(const AZStd::string& groupId)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->leaveGroup(
+            m_Session,
+            groupId.c_str(),
+            [this, groupId]()
+            {
+                OnLeaveGroupSuccess(groupId);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnLeaveGroupFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::listGroups(const AZStd::string& name, AZ::s32 limit, const AZStd::string& cursor)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listGroups(
+            m_Session,
+            name.c_str(),
+            limit,
+            cursor.c_str(),
+            [this, name, limit, cursor](Nakama::NGroupListPtr nGroups)
+            {
+                GroupList groupList = GroupList::FromNakama(*nGroups);
+                OnListGroupsSuccess(groupList, name, limit, cursor);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListGroupsFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::listUserGroups(AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listUserGroups(
+            m_Session,
+            limit,
+            static_cast<Nakama::NUserGroupState>(state),
+            cursor.c_str(),
+            [this, limit, state, cursor](Nakama::NUserGroupListPtr nUserGroups)
+            {
+                UserGroupList userGroupList = UserGroupList::FromNakama(*nUserGroups);
+                OnListUserGroupsSuccess(userGroupList, limit, state, cursor);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListUserGroupsFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::listUserGroupsWithId(const AZStd::string& userId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listUserGroups(
+            m_Session,
+            userId.c_str(),
+            limit,
+            static_cast<Nakama::NUserGroupState>(state),
+            cursor.c_str(),
+            [this, userId, limit, state, cursor](Nakama::NUserGroupListPtr nUserGroups)
+            {
+                UserGroupList userGroupList = UserGroupList::FromNakama(*nUserGroups);
+                OnListUserGroupsWithIdSuccess(userGroupList, userId, limit, state, cursor);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListUserGroupsWithIdFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::promoteGroupUsers(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<std::string> n_ids;
+        if (ids.size() > 0)
+        {
+            for (auto& id : ids)
+            {
+                n_ids.push_back(id.c_str());
+            }
+        }
+        m_Client->promoteGroupUsers(
+            m_Session,
+            groupId.c_str(),
+            n_ids,
+            [this, groupId, ids]()
+            {
+                OnPromoteGroupUsersSuccess(groupId, ids);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnPromoteGroupUsersFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::demoteGroupUsers(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<std::string> n_ids;
+        if (ids.size() > 0)
+        {
+            for (auto& id : ids)
+            {
+                n_ids.push_back(id.c_str());
+            }
+        }
+        m_Client->demoteGroupUsers(
+            m_Session,
+            groupId.c_str(),
+            n_ids,
+            [this, groupId, ids]()
+            {
+                OnDemoteGroupUsersSuccess(groupId, ids);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnDemoteGroupUsersFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::updateGroup(const AZStd::string& groupId, const AZStd::string& name, const AZStd::string& description, const AZStd::string& avatarUrl, const AZStd::string& langTag, bool open)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->updateGroup(
+            m_Session,
+            groupId.c_str(),
+            name.c_str(),
+            description.c_str(),
+            avatarUrl.c_str(),
+            langTag.c_str(),
+            open,
+            [this, groupId, name, description, avatarUrl, langTag, open]()
+            {
+                OnUpdateGroupSuccess(groupId, name, description, avatarUrl, langTag, open);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnUpdateGroupFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::listLeaderboardRecords(const AZStd::string& leaderboardId, const AZStd::vector<AZStd::string>& ownerIds, AZ::s32 limit, const AZStd::string& cursor)
     {
@@ -1539,6 +1820,211 @@ namespace NakamaClientGem
     {
         NakamaFriendsNotificationBus::Broadcast(
             &NakamaFriendsNotificationBus::Events::OnListFriendsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnCreateGroupSuccess(const Group& group)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnCreateGroupSuccess,
+            group
+        );
+    }
+    void NakamaComponent::OnCreateGroupFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnCreateGroupFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnDeleteGroupSuccess(const AZStd::string& groupId)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnDeleteGroupSuccess,
+            groupId
+        );
+    }
+    void NakamaComponent::OnDeleteGroupFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnDeleteGroupFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnAddGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnAddGroupUsersSuccess,
+            groupId,
+            ids
+        );
+    }
+    void NakamaComponent::OnAddGroupUsersFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnAddGroupUsersFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnListGroupUsersSuccess(const GroupUserList& users, const AZStd::string& groupId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnListGroupUsersSuccess,
+            users,
+            groupId,
+            limit,
+            state,
+            cursor
+        );
+    }
+    void NakamaComponent::OnListGroupUsersFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnListGroupUsersFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnKickGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnKickGroupUsersSuccess,
+            groupId,
+            ids
+        );
+    }
+    void NakamaComponent::OnKickGroupUsersFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnKickGroupUsersFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnJoinGroupSuccess(const AZStd::string& groupId)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnJoinGroupSuccess,
+            groupId
+        );
+    }
+    void NakamaComponent::OnJoinGroupFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnJoinGroupFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnLeaveGroupSuccess(const AZStd::string& groupId)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnLeaveGroupSuccess,
+            groupId
+        );
+    }
+    void NakamaComponent::OnLeaveGroupFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnLeaveGroupFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnListGroupsSuccess(const GroupList& groups, const AZStd::string& name, AZ::s32 limit, const AZStd::string& cursor)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnListGroupsSuccess,
+            groups,
+            name,
+            limit,
+            cursor
+        );
+    }
+    void NakamaComponent::OnListGroupsFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnListGroupsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnListUserGroupsSuccess(const UserGroupList& groups, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnListUserGroupsSuccess,
+            groups,
+            limit,
+            state,
+            cursor
+        );
+    }
+    void NakamaComponent::OnListUserGroupsFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnListUserGroupsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnListUserGroupsWithIdSuccess(const UserGroupList& groups, const AZStd::string& userId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnListUserGroupsWithIdSuccess,
+            groups,
+            userId,
+            limit,
+            state,
+            cursor
+        );
+    }
+    void NakamaComponent::OnListUserGroupsWithIdFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnListUserGroupsWithIdFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnPromoteGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnPromoteGroupUsersSuccess,
+            groupId,
+            ids
+        );
+    }
+    void NakamaComponent::OnPromoteGroupUsersFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnPromoteGroupUsersFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnDemoteGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnDemoteGroupUsersSuccess,
+            groupId,
+            ids
+        );
+    }
+    void NakamaComponent::OnDemoteGroupUsersFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnDemoteGroupUsersFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnUpdateGroupSuccess(const AZStd::string& groupId, const AZStd::string& name, const AZStd::string& description, const AZStd::string& avatarUrl, const AZStd::string& langTag, bool open)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnUpdateGroupSuccess,
+            groupId,
+            name,
+            description,
+            avatarUrl,
+            langTag,
+            open
+        );
+    }
+    void NakamaComponent::OnUpdateGroupFailed(const Error& error)
+    {
+        NakamaGroupsNotificationBus::Broadcast(
+            &NakamaGroupsNotificationBus::Events::OnUpdateGroupFailed,
             error
         );
     }

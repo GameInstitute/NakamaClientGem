@@ -1529,7 +1529,32 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test() = 0;
+        virtual void OnCreateGroupSuccess(const Group& group) = 0;
+        virtual void OnCreateGroupFailed(const Error& error) = 0;
+        virtual void OnDeleteGroupSuccess(const AZStd::string& groupId) = 0;
+        virtual void OnDeleteGroupFailed(const Error& error) = 0;
+        virtual void OnAddGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids) = 0;
+        virtual void OnAddGroupUsersFailed(const Error& error) = 0;
+        virtual void OnListGroupUsersSuccess(const GroupUserList& users, const AZStd::string& groupId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor) = 0;
+        virtual void OnListGroupUsersFailed(const Error& error) = 0;
+        virtual void OnKickGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids) = 0;
+        virtual void OnKickGroupUsersFailed(const Error& error) = 0;
+        virtual void OnJoinGroupSuccess(const AZStd::string& groupId) = 0;
+        virtual void OnJoinGroupFailed(const Error& error) = 0;
+        virtual void OnLeaveGroupSuccess(const AZStd::string& groupId) = 0;
+        virtual void OnLeaveGroupFailed(const Error& error) = 0;
+        virtual void OnListGroupsSuccess(const GroupList& groups, const AZStd::string& name, AZ::s32 limit, const AZStd::string& cursor) = 0;
+        virtual void OnListGroupsFailed(const Error& error) = 0;
+        virtual void OnListUserGroupsSuccess(const UserGroupList& groups, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor) = 0;
+        virtual void OnListUserGroupsFailed(const Error& error) = 0;
+        virtual void OnListUserGroupsWithIdSuccess(const UserGroupList& groups, const AZStd::string& userId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor) = 0;
+        virtual void OnListUserGroupsWithIdFailed(const Error& error) = 0;
+        virtual void OnPromoteGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids) = 0;
+        virtual void OnPromoteGroupUsersFailed(const Error& error) = 0;
+        virtual void OnDemoteGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids) = 0;
+        virtual void OnDemoteGroupUsersFailed(const Error& error) = 0;
+        virtual void OnUpdateGroupSuccess(const AZStd::string& groupId, const AZStd::string& name, const AZStd::string& description, const AZStd::string& avatarUrl, const AZStd::string& langTag, bool open) = 0;
+        virtual void OnUpdateGroupFailed(const Error& error) = 0;
     };
     using NakamaGroupsNotificationBus = AZ::EBus<NakamaGroupsNotifications>;
     class NakamaGroupsNotificationHandler
@@ -1539,11 +1564,112 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaGroupsNotificationHandler,
             "{52EF4651-DBEE-40FD-9CE7-DE7D8BC83FED}",
-            AZ::SystemAllocator, Test);
+        AZ::SystemAllocator, OnCreateGroupSuccess, OnCreateGroupFailed, OnDeleteGroupSuccess, OnDeleteGroupFailed, OnAddGroupUsersSuccess, OnAddGroupUsersFailed, OnListGroupUsersSuccess, OnListGroupUsersFailed, OnKickGroupUsersSuccess, OnKickGroupUsersFailed, OnJoinGroupSuccess, OnJoinGroupFailed, OnLeaveGroupSuccess, OnLeaveGroupFailed, OnListGroupsSuccess, OnListGroupsFailed, OnListUserGroupsSuccess, OnListUserGroupsFailed, OnListUserGroupsWithIdSuccess, OnListUserGroupsWithIdFailed, OnPromoteGroupUsersSuccess, OnPromoteGroupUsersFailed, OnDemoteGroupUsersSuccess, OnDemoteGroupUsersFailed, OnUpdateGroupSuccess, OnUpdateGroupFailed);
 
-        void Test() override
+
+        void OnCreateGroupSuccess(const Group& group) override
         {
-            Call(FN_Test);
+            Call(FN_OnCreateGroupSuccess, group);
+        }
+        void OnCreateGroupFailed(const Error& error) override
+        {
+            Call(FN_OnCreateGroupFailed, error);
+        }
+        void OnDeleteGroupSuccess(const AZStd::string& groupId) override
+        {
+            Call(FN_OnDeleteGroupSuccess, groupId);
+        }
+        void OnDeleteGroupFailed(const Error& error) override
+        {
+            Call(FN_OnDeleteGroupFailed, error);
+        }
+        void OnAddGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids) override
+        {
+            Call(FN_OnAddGroupUsersSuccess, groupId, ids);
+        }
+        void OnAddGroupUsersFailed(const Error& error) override
+        {
+            Call(FN_OnAddGroupUsersFailed, error);
+        }
+        void OnListGroupUsersSuccess(const GroupUserList& users, const AZStd::string& groupId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor) override
+        {
+            Call(FN_OnListGroupUsersSuccess, users, groupId, limit, state, cursor);
+        }
+        void OnListGroupUsersFailed(const Error& error) override
+        {
+            Call(FN_OnListGroupUsersFailed, error);
+        }
+        void OnKickGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids) override
+        {
+            Call(FN_OnKickGroupUsersSuccess, groupId, ids);
+        }
+        void OnKickGroupUsersFailed(const Error& error) override
+        {
+            Call(FN_OnKickGroupUsersFailed, error);
+        }
+        void OnJoinGroupSuccess(const AZStd::string& groupId) override
+        {
+            Call(FN_OnJoinGroupSuccess, groupId);
+        }
+        void OnJoinGroupFailed(const Error& error) override
+        {
+            Call(FN_OnJoinGroupFailed, error);
+        }
+        void OnLeaveGroupSuccess(const AZStd::string& groupId) override
+        {
+            Call(FN_OnLeaveGroupSuccess, groupId);
+        }
+        void OnLeaveGroupFailed(const Error& error) override
+        {
+            Call(FN_OnLeaveGroupFailed, error);
+        }
+        void OnListGroupsSuccess(const GroupList& groups, const AZStd::string& name, AZ::s32 limit, const AZStd::string& cursor) override
+        {
+            Call(FN_OnListGroupsSuccess, groups, name, limit, cursor);
+        }
+        void OnListGroupsFailed(const Error& error) override
+        {
+            Call(FN_OnListGroupsFailed, error);
+        }
+        void OnListUserGroupsSuccess(const UserGroupList& groups, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor) override
+        {
+            Call(FN_OnListUserGroupsSuccess, groups, limit, state, cursor);
+        }
+        void OnListUserGroupsFailed(const Error& error) override
+        {
+            Call(FN_OnListUserGroupsFailed, error);
+        }
+        void OnListUserGroupsWithIdSuccess(const UserGroupList& groups, const AZStd::string& userId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor) override
+        {
+            Call(FN_OnListUserGroupsWithIdSuccess, groups, userId, limit, state, cursor);
+        }
+        void OnListUserGroupsWithIdFailed(const Error& error) override
+        {
+            Call(FN_OnListUserGroupsWithIdFailed, error);
+        }
+        void OnPromoteGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids) override
+        {
+            Call(FN_OnPromoteGroupUsersSuccess, groupId, ids);
+        }
+        void OnPromoteGroupUsersFailed(const Error& error) override
+        {
+            Call(FN_OnPromoteGroupUsersFailed, error);
+        }
+        void OnDemoteGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids) override
+        {
+            Call(FN_OnDemoteGroupUsersSuccess, groupId, ids);
+        }
+        void OnDemoteGroupUsersFailed(const Error& error) override
+        {
+            Call(FN_OnDemoteGroupUsersFailed, error);
+        }
+        void OnUpdateGroupSuccess(const AZStd::string& groupId, const AZStd::string& name, const AZStd::string& description, const AZStd::string& avatarUrl, const AZStd::string& langTag, bool open) override
+        {
+            Call(FN_OnUpdateGroupSuccess, groupId, name, description, avatarUrl, langTag, open);
+        }
+        void OnUpdateGroupFailed(const Error& error) override
+        {
+            Call(FN_OnUpdateGroupFailed, error);
         }
     };
 

@@ -1314,6 +1314,33 @@ namespace NakamaClientGem
         void OnListFriendsSuccess(const AZStd::vector<Friend>& friends, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor);
         void OnListFriendsFailed(const Error& error);
 
+        void OnCreateGroupSuccess(const Group& group);
+        void OnCreateGroupFailed(const Error& error);
+        void OnDeleteGroupSuccess(const AZStd::string& groupId);
+        void OnDeleteGroupFailed(const Error& error);
+        void OnAddGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids);
+        void OnAddGroupUsersFailed(const Error& error);
+        void OnListGroupUsersSuccess(const GroupUserList& users, const AZStd::string& groupId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor);
+        void OnListGroupUsersFailed(const Error& error);
+        void OnKickGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids);
+        void OnKickGroupUsersFailed(const Error& error);
+        void OnJoinGroupSuccess(const AZStd::string& groupId);
+        void OnJoinGroupFailed(const Error& error);
+        void OnLeaveGroupSuccess(const AZStd::string& groupId);
+        void OnLeaveGroupFailed(const Error& error);
+        void OnListGroupsSuccess(const GroupList& groups, const AZStd::string& name, AZ::s32 limit, const AZStd::string& cursor);
+        void OnListGroupsFailed(const Error& error);
+        void OnListUserGroupsSuccess(const UserGroupList& groups, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor);
+        void OnListUserGroupsFailed(const Error& error);
+        void OnListUserGroupsWithIdSuccess(const UserGroupList& groups, const AZStd::string& userId, AZ::s32 limit, AZ::u8 state, const AZStd::string& cursor);
+        void OnListUserGroupsWithIdFailed(const Error& error);
+        void OnPromoteGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids);
+        void OnPromoteGroupUsersFailed(const Error& error);
+        void OnDemoteGroupUsersSuccess(const AZStd::string& groupId, const AZStd::vector<AZStd::string>& ids);
+        void OnDemoteGroupUsersFailed(const Error& error);
+        void OnUpdateGroupSuccess(const AZStd::string& groupId, const AZStd::string& name, const AZStd::string& description, const AZStd::string& avatarUrl, const AZStd::string& langTag, bool open);
+        void OnUpdateGroupFailed(const Error& error);
+
     protected:
         /*
         * Puts this component into an active state.
