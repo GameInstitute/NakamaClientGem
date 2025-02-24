@@ -1681,7 +1681,14 @@ namespace NakamaClientGem
 
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
 
-        virtual void Test() = 0;
+        virtual void OnListLeaderboardRecordsSuccess(const LeaderboardRecordList& records, const AZStd::string& leaderboardId, const AZStd::vector<AZStd::string>& ownerIds, AZ::s32 limit, const AZStd::string& cursor) = 0;
+        virtual void OnListLeaderboardRecordsFailed(const Error& error) = 0;
+        virtual void OnListLeaderboardRecordsAroundOwnerSuccess(const LeaderboardRecordList& records, const AZStd::string& leaderboardId, const AZStd::string& ownerId, AZ::s32 limit) = 0;
+        virtual void OnListLeaderboardRecordsAroundOwnerFailed(const Error& error) = 0;
+        virtual void OnWriteLeaderboardRecordSuccess(const LeaderboardRecord& record, const AZStd::string& leaderboardId, AZ::s64 score, AZ::s64 subscore, AZStd::string metadata) = 0;
+        virtual void OnWriteLeaderboardRecordFailed(const Error& error) = 0;
+        virtual void OnDeleteLeaderboardRecordSuccess(const AZStd::string& leaderboardId) = 0;
+        virtual void OnDeleteLeaderboardRecordFailed(const Error& error) = 0;
     };
     using NakamaLeaderboardsNotificationBus = AZ::EBus<NakamaLeaderboardsNotifications>;
     class NakamaLeaderboardsNotificationHandler
@@ -1691,11 +1698,40 @@ namespace NakamaClientGem
         AZ_EBUS_BEHAVIOR_BINDER(
             NakamaLeaderboardsNotificationHandler,
             "{EAEDBEBD-11CA-43A5-A9D8-39A3F6330DA6}",
-            AZ::SystemAllocator, Test);
+            AZ::SystemAllocator, OnListLeaderboardRecordsSuccess, OnListLeaderboardRecordsFailed, OnListLeaderboardRecordsAroundOwnerSuccess, OnListLeaderboardRecordsAroundOwnerFailed, OnWriteLeaderboardRecordSuccess, OnWriteLeaderboardRecordFailed, OnDeleteLeaderboardRecordSuccess, OnDeleteLeaderboardRecordFailed);
 
-        void Test() override
+
+        void OnListLeaderboardRecordsSuccess(const LeaderboardRecordList& records, const AZStd::string& leaderboardId, const AZStd::vector<AZStd::string>& ownerIds, AZ::s32 limit, const AZStd::string& cursor) override
         {
-            Call(FN_Test);
+            Call(FN_OnListLeaderboardRecordsSuccess, records, leaderboardId, ownerIds, limit, cursor);
+        }
+        void OnListLeaderboardRecordsFailed(const Error& error) override
+        {
+            Call(FN_OnListLeaderboardRecordsFailed, error);
+        }
+        void OnListLeaderboardRecordsAroundOwnerSuccess(const LeaderboardRecordList& records, const AZStd::string& leaderboardId, const AZStd::string& ownerId, AZ::s32 limit) override
+        {
+            Call(FN_OnListLeaderboardRecordsAroundOwnerSuccess, records, leaderboardId, ownerId, limit);
+        }
+        void OnListLeaderboardRecordsAroundOwnerFailed(const Error& error) override
+        {
+            Call(FN_OnListLeaderboardRecordsAroundOwnerFailed, error);
+        }
+        void OnWriteLeaderboardRecordSuccess(const LeaderboardRecord& record, const AZStd::string& leaderboardId, AZ::s64 score, AZ::s64 subscore, AZStd::string metadata) override
+        {
+            Call(FN_OnWriteLeaderboardRecordSuccess, record, leaderboardId, score, subscore, metadata);
+        }
+        void OnWriteLeaderboardRecordFailed(const Error& error) override
+        {
+            Call(FN_OnWriteLeaderboardRecordFailed, error);
+        }
+        void OnDeleteLeaderboardRecordSuccess(const AZStd::string& leaderboardId) override
+        {
+            Call(FN_OnDeleteLeaderboardRecordSuccess, leaderboardId);
+        }
+        void OnDeleteLeaderboardRecordFailed(const Error& error) override
+        {
+            Call(FN_OnDeleteLeaderboardRecordFailed, error);
         }
     };
 

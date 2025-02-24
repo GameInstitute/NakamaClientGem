@@ -1400,15 +1400,102 @@ namespace NakamaClientGem
     }
     void NakamaComponent::listLeaderboardRecords(const AZStd::string& leaderboardId, const AZStd::vector<AZStd::string>& ownerIds, AZ::s32 limit, const AZStd::string& cursor)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        std::vector<std::string> n_ownerIds;
+        if (ownerIds.size() > 0)
+        {
+            for (auto& ownerId : ownerIds)
+            {
+                n_ownerIds.push_back(ownerId.c_str());
+            }
+        }
+        m_Client->listLeaderboardRecords(
+            m_Session,
+            leaderboardId.c_str(),
+            n_ownerIds,
+            limit,
+            cursor.c_str(),
+            [this, leaderboardId, ownerIds, limit, cursor](Nakama::NLeaderboardRecordListPtr nLeaderboardRecords)
+            {
+                LeaderboardRecordList leaderboardRecordList = LeaderboardRecordList::FromNakama(*nLeaderboardRecords);
+                OnListLeaderboardRecordsSuccess(leaderboardRecordList, leaderboardId, ownerIds, limit, cursor);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListLeaderboardRecordsFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::listLeaderboardRecordsAroundOwner(const AZStd::string& leaderboardId, const AZStd::string& ownerId, AZ::s32 limit)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->listLeaderboardRecordsAroundOwner(
+            m_Session,
+            leaderboardId.c_str(),
+            ownerId.c_str(),
+            limit,
+            [this, leaderboardId, ownerId, limit](Nakama::NLeaderboardRecordListPtr nLeaderboardRecords)
+            {
+                LeaderboardRecordList leaderboardRecordList = LeaderboardRecordList::FromNakama(*nLeaderboardRecords);
+                OnListLeaderboardRecordsAroundOwnerSuccess(leaderboardRecordList, leaderboardId, ownerId, limit);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnListLeaderboardRecordsAroundOwnerFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::writeLeaderboardRecord(const AZStd::string& leaderboardId, AZ::s64 score, AZ::s64 subscore, AZStd::string metadata)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->writeLeaderboardRecord(
+            m_Session,
+            leaderboardId.c_str(),
+            score,
+            subscore,
+            metadata.c_str(),
+            [this, leaderboardId, score, subscore, metadata](Nakama::NLeaderboardRecord record)
+            {
+                LeaderboardRecord leaderboardRecord = LeaderboardRecord::FromNakama(record);
+                OnWriteLeaderboardRecordSuccess(leaderboardRecord, leaderboardId, score, subscore, metadata);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnWriteLeaderboardRecordFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::deleteLeaderboardRecord(const AZStd::string& leaderboardId)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->deleteLeaderboardRecord(
+            m_Session,
+            leaderboardId.c_str(),
+            [this, leaderboardId]()
+            {
+                OnDeleteLeaderboardRecordSuccess(leaderboardId);
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnDeleteLeaderboardRecordFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::writeTournamentRecord(const AZStd::string& tournamentId, AZ::s64 score, AZ::s64 subscore, AZStd::string metadata)
     {
@@ -2025,6 +2112,73 @@ namespace NakamaClientGem
     {
         NakamaGroupsNotificationBus::Broadcast(
             &NakamaGroupsNotificationBus::Events::OnUpdateGroupFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnListLeaderboardRecordsSuccess(const LeaderboardRecordList& records, const AZStd::string& leaderboardId, const AZStd::vector<AZStd::string>& ownerIds, AZ::s32 limit, const AZStd::string& cursor)
+    {
+        NakamaLeaderboardsNotificationBus::Broadcast(
+            &NakamaLeaderboardsNotificationBus::Events::OnListLeaderboardRecordsSuccess,
+            records,
+            leaderboardId,
+            ownerIds,
+            limit,
+            cursor
+        );
+    }
+    void NakamaComponent::OnListLeaderboardRecordsFailed(const Error& error)
+    {
+        NakamaLeaderboardsNotificationBus::Broadcast(
+            &NakamaLeaderboardsNotificationBus::Events::OnListLeaderboardRecordsFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnListLeaderboardRecordsAroundOwnerSuccess(const LeaderboardRecordList& records, const AZStd::string& leaderboardId, const AZStd::string& ownerId, AZ::s32 limit)
+    {
+        NakamaLeaderboardsNotificationBus::Broadcast(
+            &NakamaLeaderboardsNotificationBus::Events::OnListLeaderboardRecordsAroundOwnerSuccess,
+            records,
+            leaderboardId,
+            ownerId,
+            limit
+        );
+    }
+    void NakamaComponent::OnListLeaderboardRecordsAroundOwnerFailed(const Error& error)
+    {
+        NakamaLeaderboardsNotificationBus::Broadcast(
+            &NakamaLeaderboardsNotificationBus::Events::OnListLeaderboardRecordsAroundOwnerFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnWriteLeaderboardRecordSuccess(const LeaderboardRecord& record, const AZStd::string& leaderboardId, AZ::s64 score, AZ::s64 subscore, AZStd::string metadata)
+    {
+        NakamaLeaderboardsNotificationBus::Broadcast(
+            &NakamaLeaderboardsNotificationBus::Events::OnWriteLeaderboardRecordSuccess,
+            record,
+            leaderboardId,
+            score,
+            subscore,
+            metadata
+        );
+    }
+    void NakamaComponent::OnWriteLeaderboardRecordFailed(const Error& error)
+    {
+        NakamaLeaderboardsNotificationBus::Broadcast(
+            &NakamaLeaderboardsNotificationBus::Events::OnWriteLeaderboardRecordFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnDeleteLeaderboardRecordSuccess(const AZStd::string& leaderboardId)
+    {
+        NakamaLeaderboardsNotificationBus::Broadcast(
+            &NakamaLeaderboardsNotificationBus::Events::OnDeleteLeaderboardRecordSuccess,
+            leaderboardId
+        );
+    }
+    void NakamaComponent::OnDeleteLeaderboardRecordFailed(const Error& error)
+    {
+        NakamaLeaderboardsNotificationBus::Broadcast(
+            &NakamaLeaderboardsNotificationBus::Events::OnDeleteLeaderboardRecordFailed,
             error
         );
     }

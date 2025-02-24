@@ -1341,6 +1341,17 @@ namespace NakamaClientGem
         void OnUpdateGroupSuccess(const AZStd::string& groupId, const AZStd::string& name, const AZStd::string& description, const AZStd::string& avatarUrl, const AZStd::string& langTag, bool open);
         void OnUpdateGroupFailed(const Error& error);
 
+        void OnListLeaderboardRecordsSuccess(const LeaderboardRecordList& records, const AZStd::string& leaderboardId, const AZStd::vector<AZStd::string>& ownerIds, AZ::s32 limit, const AZStd::string& cursor);
+        void OnListLeaderboardRecordsFailed(const Error& error);
+        void OnListLeaderboardRecordsAroundOwnerSuccess(const LeaderboardRecordList& records, const AZStd::string& leaderboardId, const AZStd::string& ownerId, AZ::s32 limit);
+        void OnListLeaderboardRecordsAroundOwnerFailed(const Error& error);
+        void OnWriteLeaderboardRecordSuccess(const LeaderboardRecord& record, const AZStd::string& leaderboardId, AZ::s64 score, AZ::s64 subscore, AZStd::string metadata);
+        void OnWriteLeaderboardRecordFailed(const Error& error);
+        void OnDeleteLeaderboardRecordSuccess(const AZStd::string& leaderboardId);
+        void OnDeleteLeaderboardRecordFailed(const Error& error);
+
+
+
     protected:
         /*
         * Puts this component into an active state.
