@@ -753,6 +753,24 @@ namespace NakamaClientGem
     }
     void NakamaComponent::importFacebookFriends(const AZStd::string& token, bool reset)
     {
+        if (!m_Session)
+        {
+            OnUnauthenticated();
+            return;
+        }
+        m_Client->importFacebookFriends(
+            m_Session,
+            token.c_str(),
+            reset,
+            [this]()
+            {
+                OnImportFacebookFriendsSuccess();
+            },
+            [this](const Nakama::NError& nError)
+            {
+                OnImportFacebookFriendsFailed(Error::FromNakama(nError));
+            }
+        );
     }
     void NakamaComponent::getAccount()
     {
@@ -1100,9 +1118,29 @@ namespace NakamaClientGem
     }
     void NakamaComponent::OnUnlinkSuccess()
     {
+        NakamaListenerNotificationBus::Broadcast(
+            &NakamaListenerNotificationBus::Events::OnUnlinkSuccess
+        );
     }
     void NakamaComponent::OnUnlinkFailed(const Error& error)
     {
+        NakamaListenerNotificationBus::Broadcast(
+            &NakamaListenerNotificationBus::Events::OnUnlinkFailed,
+            error
+        );
+    }
+    void NakamaComponent::OnImportFacebookFriendsSuccess()
+    {
+        NakamaListenerNotificationBus::Broadcast(
+            &NakamaListenerNotificationBus::Events::OnImportFacebookFriendsSuccess
+        );
+    }
+    void NakamaComponent::OnImportFacebookFriendsFailed(const Error& error)
+    {
+        NakamaListenerNotificationBus::Broadcast(
+            &NakamaListenerNotificationBus::Events::OnImportFacebookFriendsFailed,
+            error
+        );
     }
     void NakamaComponent::OnUnauthenticated()
     {

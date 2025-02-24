@@ -1292,6 +1292,9 @@ namespace NakamaClientGem
         void OnUnlinkSuccess();
         void OnUnlinkFailed(const Error& error);
 
+        void OnImportFacebookFriendsSuccess();
+        void OnImportFacebookFriendsFailed(const Error& error);
+
         void OnUnauthenticated();
 
     protected:

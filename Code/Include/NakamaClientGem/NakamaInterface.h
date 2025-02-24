@@ -1262,6 +1262,9 @@ namespace NakamaClientGem
         virtual void OnUnlinkSuccess() = 0;
         virtual void OnUnlinkFailed(const Error& error) = 0;
 
+        virtual void OnImportFacebookFriendsSuccess() = 0;
+        virtual void OnImportFacebookFriendsFailed(const Error& error) = 0;
+
         virtual void OnUnauthenticated() = 0;
     };
 
@@ -1275,7 +1278,7 @@ namespace NakamaClientGem
             NakamaListenerNotificationHandler,
             "{9B3ABC85-8E49-44C7-9BF1-D2CC119DB8BF}",
             AZ::SystemAllocator, OnConnect, OnDisconnect, OnRtError, OnChannelMessage, OnChannelPresence, OnMatchmakerMatched, OnMatchData, OnMatchPresence, OnNotifications, OnParty, OnPartyClosed, OnPartyData, OnPartyJoinRequest, OnPartyLeader, OnPartyMatchmakerTicket, OnPartyPresence, OnStatusPresence, OnStreamPresence, OnStreamData, OnError,
-            OnAuthenticateSuccess, OnAuthenticateFailed, OnLinkSuccess, OnLinkFailed, OnUnauthenticated, OnUnlinkSuccess, OnUnlinkFailed
+            OnAuthenticateSuccess, OnAuthenticateFailed, OnLinkSuccess, OnLinkFailed, OnUnauthenticated, OnUnlinkSuccess, OnUnlinkFailed, OnImportFacebookFriendsSuccess, OnImportFacebookFriendsFailed
         );
 
         // ÊÂ¼þÓ³Éä
@@ -1393,6 +1396,15 @@ namespace NakamaClientGem
         void OnUnlinkFailed(const Error& error) override
         {
             Call(FN_OnUnlinkFailed, error);
+        }
+
+        void OnImportFacebookFriendsSuccess() override
+        {
+            Call(FN_OnImportFacebookFriendsSuccess);
+        }
+        void OnImportFacebookFriendsFailed(const Error& error) override
+        {
+            Call(FN_OnImportFacebookFriendsFailed, error);
         }
     };
 } // namespace NakamaClientGem
